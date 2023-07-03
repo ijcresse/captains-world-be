@@ -6,6 +6,7 @@ python3
 pip
 Flask
 virtualenv
+mysql
 
 ##Installation
 ```
