@@ -1,18 +1,28 @@
 from flask import Flask, request
 import pymysql.cursors
 import os
+import sys
 
 def create_connection():
+    cw_host = os.getenv("CW_DB_HOST")
+    cw_user = os.getenv("CW_DB_USER")
+    cw_password = os.getenv("CW_DB_PASS")
+    cw_database = os.getenv("CW_DB_NAME")
+    
+    if cw_host is None or cw_user is None or cw_password is None or cw_database is None:
+        print("ERROR: one or more environment variables is missing!")
+        sys.exit()
+
     return pymysql.connect(
-        host = os.getenv("DB_HOST"),
-        user = os.getenv("DB_USER"),
-        password = os.getenv("DB_PASS"),
-        database = os.getenv("DB_NAME"),
+        host = cw_host,
+        user = cw_user,
+        password = cw_password,
+        database = cw_database,
         cursorclass = pymysql.cursors.DictCursor
     )
 
 app = Flask(__name__)
-#connection = create_connection()
+connection = create_connection()
 
 @app.route("/")
 def hello_world():
