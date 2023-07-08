@@ -13,6 +13,7 @@ def create_connection():
         print("ERROR: one or more environment variables is missing!")
         sys.exit()
 
+    print("Creating connection to DB")
     return pymysql.connect(
         host = cw_host,
         user = cw_user,
@@ -22,7 +23,8 @@ def create_connection():
     )
 
 app = Flask(__name__)
-connection = create_connection()
+#connection = create_connection()
+#close_connection(connection)
 
 @app.route("/")
 def hello_world():
@@ -44,6 +46,17 @@ def availability():
 def drink_list():
     limit = request.args.get('limit') if request.args.get('limit') is not None else 50
     offset = request.args.get('offset') if request.args.get('offset') is not None else 0
+
+    connection = create_connection()
+    cursor = connection.cursor()
+    query = f"SELECT c_id, c_name, c_type, c_date_crafted, c_image_url FROM t_drink LIMIT {limit} OFFSET {offset}"
+    print(query)
+    
+    cursor.execute(query)
+    result = cursor.fetchall()
+    connection.close()
+    return [result]
+    
     #establish connection
     #SELECT c_id, c_name, c_type, c_date_crafted, c_image_url
     #commit, fetchall
