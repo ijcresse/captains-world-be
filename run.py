@@ -22,29 +22,26 @@ def create_connection():
         cursorclass = pymysql.cursors.DictCursor
     )
 
+def create_response(status, desc = "", data = []):
+    return { 'status': status, 'desc' : desc, 'data': data }
+
 app = Flask(__name__)
-#connection = create_connection()
-#close_connection(connection)
 
 @app.route("/")
 def hello_world():
     return "<p>Hello, world!</p>"
 
-#GET /drink/list
-#queryparams: limit offset (not required)
-#gets say, latest 20 drinks along with material needed for display in FE
-
 @app.route("/health", methods=['GET'])
 def health():
-    return "OK"
+    return create_response(status = 200, desc = "OK")
 
 @app.route("/availability", methods=['GET'])
 def availability():
-    return "OK"
+    return create_response(status = 200, desc = "OK")
 
 @app.route("/drink/list", methods=['GET'])
 def drink_list():
-    limit = request.args.get('limit') if request.args.get('limit') is not None else 50
+    limit = request.args.get('limit') if request.args.get('limit') is not None else 20
     offset = request.args.get('offset') if request.args.get('offset') is not None else 0
 
     connection = create_connection()
@@ -55,17 +52,18 @@ def drink_list():
     cursor.execute(query)
     result = cursor.fetchall()
     connection.close()
-    return [result]
-    
-    #establish connection
-    #SELECT c_id, c_name, c_type, c_date_crafted, c_image_url
-    #commit, fetchall
+    return create_response(status = 200, data = [result])
     #check for errors
-    #
 
 #GET /drink/description
 #queryparams: id (required)
 #gets detailed info about given drink ID
+@app.route("/drink/description", methods=['GET'])
+def drink_desc():
+    id = request.args.get('id')
+    if id is None:
+        return create_response(status = 400, desc = "missing id parameter")
+    return create_response(status = 200, desc = "foo")
 
 #GET /drink/search
 #queryparams: name year type tags
