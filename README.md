@@ -3,10 +3,11 @@ A simple REST API to service requests for the Captain's World website. Runs on F
 
 ##Installation
 ```
+python3 -m venv .venv
 . .venv/bin/activate #start venv
 python3 -m pip install -r requirements.txt
-#access your sql server
-source /path/to/project/scripts/db_setup.sql
+#access mysql and source database setup script
+>source /path/to/project/scripts/db_setup.sql
 ```
 
 ##Running

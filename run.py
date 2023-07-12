@@ -1,5 +1,5 @@
-from flask import Flask, request
-import pymysql.cursors
+from flask import Flask, request, abort
+import pymysql
 import os
 import sys
 
@@ -26,10 +26,6 @@ def create_response(status, desc = "", data = []):
     return { 'status': status, 'desc' : desc, 'data': data }
 
 app = Flask(__name__)
-
-@app.route("/")
-def hello_world():
-    return "<p>Hello, world!</p>"
 
 @app.route("/health", methods=['GET'])
 def health():
@@ -63,7 +59,20 @@ def drink_desc():
     id = request.args.get('id')
     if id is None:
         return create_response(status = 400, desc = "missing id parameter")
-    return create_response(status = 200, desc = "foo")
+    
+    connection = create_connection()
+    cursor = connection.cursor()
+    query = f"SELECT c_name, c_type, c_date_crafted, c_image_url FROM t_drink WHERE c_id={id}"
+    
+    cursor.execute(query)
+    result = cursor.fetchone()
+    connection.close()
+
+    #check for errors
+
+    return create_response(status = 200, data = [result])
+
+
 
 #GET /drink/search
 #queryparams: name year type tags
@@ -77,7 +86,8 @@ def drink_desc():
 #POST /drink
 #request object: drink_request. full of details and params
 #for admin, requires cookie
-#stores image elsewhere and fetches image id, stores that in db. unsure exactly how this works
+#stores image elsewhere and fetches image id, stores that in db. unsure exactly how this works.
+#ok flask suports this. check under #File-Uploads on their quickstart. includes some details for the HTML form too.
 
 #POST /drink/image
 #request object: drink id (?). requires png, jpg, jpeg, gif.
