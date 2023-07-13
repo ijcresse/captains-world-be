@@ -3,13 +3,13 @@ import pymysql
 from flask import current_app, g
 
 def create_connection():
+    db_config = current_app.config['ENV_VARS']['DB']
 
-    print("Creating connection to DB")
     return pymysql.connect(
-        host = current_app.config['ENV_VARS'].host,
-        user = current_app.config['ENV_VARS'].user,
-        password = current_app.config['ENV_VARS'].password,
-        database = current_app.config['ENV_VARS'].database,
+        host = db_config['host'],
+        user = db_config['user'],
+        password = db_config['password'],
+        database = db_config['database'],
         cursorclass = pymysql.cursors.DictCursor
     )
 

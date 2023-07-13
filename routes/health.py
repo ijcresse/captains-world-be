@@ -1,7 +1,7 @@
 from flask import Blueprint
 from .route_util import create_response
 
-health_api = Blueprint('api', __name__, url_prefix = '/api')
+health_api = Blueprint('health', __name__, url_prefix = '/api')
 
 @health_api.route("/health", methods = ['GET'])
 def health():
