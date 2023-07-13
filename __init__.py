@@ -1,54 +1,19 @@
 from flask import Flask, request
 
-#from services.db import create_connection
-#from routes.health import create_response
 from routes.health import health_api
+from config import get_env_vars
+
 
 def create_app(config = None):
     app = Flask(__name__)
 
+    app.config['ENV_VARS'] = get_env_vars()
+    
     app.register_blueprint(health_api)
 
     return app
 
 
-
-# @app.route("/drink/list", methods=['GET'])
-# def drink_list():
-#     limit = request.args.get('limit') if request.args.get('limit') is not None else 20
-#     offset = request.args.get('offset') if request.args.get('offset') is not None else 0
-
-#     connection = create_connection()
-#     cursor = connection.cursor()
-#     query = f"SELECT c_id, c_name, c_type, c_date_crafted, c_image_url FROM t_drink LIMIT {limit} OFFSET {offset}"
-#     print(query)
-    
-#     cursor.execute(query)
-#     result = cursor.fetchall()
-#     connection.close()
-#     return create_response(status = 200, data = [result])
-#     #check for errors
-
-# #GET /drink/description
-# #queryparams: id (required)
-# #gets detailed info about given drink ID
-# @app.route("/drink/description", methods=['GET'])
-# def drink_desc():
-#     id = request.args.get('id')
-#     if id is None:
-#         return create_response(status = 400, desc = "missing id parameter")
-    
-#     connection = create_connection()
-#     cursor = connection.cursor()
-#     query = f"SELECT c_name, c_type, c_date_crafted, c_image_url FROM t_drink WHERE c_id={id}"
-    
-#     cursor.execute(query)
-#     result = cursor.fetchone()
-#     connection.close()
-
-#     #check for errors
-
-#     return create_response(status = 200, data = [result])
 
 
 
