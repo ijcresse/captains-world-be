@@ -1,19 +1,18 @@
 from flask import Flask, request
 
 from routes.health import health_api
+from routes.drinks import drinks_api
 from config import get_env_vars
 
-
-def create_app(config = None):
+def create_app():
     app = Flask(__name__)
 
     app.config['ENV_VARS'] = get_env_vars()
     
     app.register_blueprint(health_api)
+    app.register_blueprint(drinks_api)
 
     return app
-
-
 
 
 
