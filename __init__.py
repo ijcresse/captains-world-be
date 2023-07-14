@@ -1,4 +1,4 @@
-from flask import Flask, request
+from flask import Flask
 
 from routes.health import health_api
 from routes.drinks import drinks_api
