@@ -1,5 +1,8 @@
+import os
 from flask import Blueprint, request, current_app
-from .route_util import create_response
+from werkzeug.utils import secure_filename
+
+from .route_util import create_response, allowed_extensions
 from services.db import get_db, close_db
 
 drinks_api = Blueprint('drink', __name__, url_prefix = '/api/drink')
@@ -29,8 +32,17 @@ def drink_desc():
 @drinks_api.route("/", methods=['POST'])
 def post_drink():
     image_dir = current_app.config['DIR']['images']
-    if 'file' not in request.files:
-        
+    extensions = current_app.config['DIR']['extensions']
+
+    if 'file' not in request.files or request.files['file'].filename == '':
+        create_response(status = 400, desc = "missing image file")
+
+    img = request.files['file']
+    if img and allowed_extensions(img.filename, extensions):
+        filename = secure_filename(img.filename)
+        img.save(os.path.join(image_dir, filename))
+        return create_response(status = 200, desc = "image uploaded successfully")
+
 
 #GET /drink/list
 #queryparams: limit, offset

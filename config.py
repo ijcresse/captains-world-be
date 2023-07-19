@@ -18,7 +18,8 @@ def get_db_config():
 
 def get_dir_config():
     dir_config = {
-        'images' : os.getenv("CW_DIR_IMAGES")
+        'images' : os.getenv("CW_DIR_IMAGES"),
+        'extensions' : { 'jpg', 'jpeg', 'png', 'gif' }
     }
 
     if dir_config['images'] is None:
