@@ -12,7 +12,9 @@ python3 -m pip install -r requirements.txt
 
 ##Running
 ```
-#create .env file containing the following vars: CW_DB_HOST, CW_DB_USER, CW_DB_PASS, CW_DB_NAME=captains_world
+#create .env file containing the following vars: 
+#directories: CW_DIR_IMAGES
+#images: CW_DB_HOST, CW_DB_USER, CW_DB_PASS, CW_DB_NAME
 python3 -m flask --app . run --debug
 ```
 

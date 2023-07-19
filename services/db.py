@@ -4,7 +4,7 @@ from flask import current_app, g
 
 def get_db():
     if 'db' not in g:
-        db_config = current_app.config['ENV_VARS']['DB']
+        db_config = current_app.config['DB']
         g.db = pymysql.connect(
             host = db_config['host'],
             user = db_config['user'],
