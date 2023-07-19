@@ -35,14 +35,17 @@ def post_drink():
     extensions = current_app.config['DIR']['extensions']
 
     if 'file' not in request.files or request.files['file'].filename == '':
-        create_response(status = 400, desc = "missing image file")
+        print('attempting to return bad response')
+        return create_response(status = 400, desc = "missing image file")
 
     img = request.files['file']
     if img and allowed_extensions(img.filename, extensions):
         filename = secure_filename(img.filename)
+        print(f"filename of uploaded file is {filename}")
         img.save(os.path.join(image_dir, filename))
-        return create_response(status = 200, desc = "image uploaded successfully")
-
+        return create_response(status = 200, desc = f"image {filename} uploaded successfully")
+    else:
+        return create_response(status = 400, desc = "incorrect filetype")
 
 #GET /drink/list
 #queryparams: limit, offset
