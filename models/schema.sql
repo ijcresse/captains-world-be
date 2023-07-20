@@ -40,6 +40,7 @@ CREATE TABLE t_drink(
     c_id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     c_name VARCHAR(200),
     c_type ENUM('sake', 'spirit', 'wine', 'beer', 'other') DEFAULT 'other',
+    c_description TEXT,
     c_date_crafted TIMESTAMP,
     c_date_enjoyed TIMESTAMP,
     c_date_posted TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
