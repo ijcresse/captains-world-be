@@ -14,6 +14,7 @@ def save_image(img):
     extensions = current_app.config['DIR']['extensions']
 
     if img and allowed_extensions(img.filename, extensions):
+        print('allowed ext')
         filename = secure_filename(img.filename)
         
         try:
@@ -22,6 +23,6 @@ def save_image(img):
             filename = ''
             print(f"WARN: unable to successfully save {filename} to disk.")
             print(jsonify(error))
-            return filename
+        return filename
     else:
         return ''

@@ -49,6 +49,9 @@ class Drink:
     def post_drink_query(self):
         return f"INSERT INTO t_drink (c_name, c_drink_type, c_sake_type, c_date_enjoyed, c_description) VALUES ('{self.name}', '{self.drink_type}', '{self.sake_type}', '{self.date_enjoyed}', '{self.desc}')"
 
+    def post_drink_image_query(filename, id):
+        return f"UPDATE t_drink SET c_image_url='{filename}' WHERE c_id={id}"
+
     def get_drink_query(id):
         return f"SELECT c_name, c_drink_type, c_sake_type, c_date_enjoyed, c_description, c_image_url FROM t_drink WHERE c_id={id}"
 

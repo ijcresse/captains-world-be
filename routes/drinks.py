@@ -65,10 +65,18 @@ def post_drink_image(id):
     img = request.files['file']
 
     filename = save_image(img)
-    if filename == '':
-        create_response(status = 500, desc = "unable to save image to disk")
+    if filename is None or filename == '':
+        return create_response(status = 500, desc = "unable to save image to disk")
     else:
-        create_response(status = 200, desc = f"saved {filename} to disk")
+        c = get_db()
+        cursor = c.cursor()
+        query = Drink.post_drink_image_query(filename, id)
+        cursor.execute(query)
+        c.commit()
+        close_db(c)
+        #what if this fails, or get a bad id?
+
+        return create_response(status = 200, desc = f"saved {filename} to disk")
 
 
 #GET /drink/list
