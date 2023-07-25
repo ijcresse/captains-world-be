@@ -36,25 +36,25 @@ def post_drink():
     if request.is_json is False:
         return create_response(status = 400, desc = "missing drink data")
     data = request.get_json()
-    print(data)
-
     drink = Drink(data)
 
-    #create db connection, save drink object to database. fetch ID of inserted row
     c = get_db()
     cursor = c.cursor()
     query = drink.post_drink_query()
     cursor.execute(query)
     c.commit()
 
+    #expecting requests to be user driven, extremely unlikely for concurrency issues
+    #but this might be a good place to improve things. TODO
     get_id = "SELECT c_id, c_name FROM t_drink ORDER BY c_id DESC LIMIT 1"
     cursor.execute(get_id)
     row = cursor.fetchone()
+    close_db(c)
     
     if row['c_name'] == drink.name:
-        create_response(status = 200, data = { 'id' : id})
+        return create_response(status = 200, data = {'id' : row['c_id']})
     else:
-        create_response(status = 500, desc = f"unable to post drink {drink.name} to db")
+        return create_response(status = 500, desc = f"unable to post drink {drink.name} to db")
     
 
 @drinks_api.route("/<id>/img", methods=['POST'])
