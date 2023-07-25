@@ -50,10 +50,10 @@ class Drink:
         return f"INSERT INTO t_drink (c_name, c_drink_type, c_sake_type, c_date_enjoyed, c_description) VALUES ('{self.name}', '{self.drink_type}', '{self.sake_type}', '{self.date_enjoyed}', '{self.desc}')"
 
     def get_drink_query(id):
-        return f"SELECT c_name, c_drink_type, c_sake_type, c_date_enjoyed, c_description, c_image_url FROM t_drinks WHERE c_id={id}"
+        return f"SELECT c_name, c_drink_type, c_sake_type, c_date_enjoyed, c_description, c_image_url FROM t_drink WHERE c_id={id}"
 
     def get_drinks_query(limit, offset):
-        return f"SELECT c_id, c_name, c_type, c_date_crafted, c_image_url FROM t_drink LIMIT {limit} OFFSET {offset}"
+        return f"SELECT c_id, c_name, c_drink_type, c_sake_type, c_date_crafted, c_image_url FROM t_drink LIMIT {limit} OFFSET {offset}"
 
 
 class DrinkType(Enum):

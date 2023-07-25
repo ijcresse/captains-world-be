@@ -17,7 +17,7 @@ def drink_desc(id):
     
     c = get_db()
     cursor = c.cursor()
-    query = f"SELECT c_name, c_type, c_date_crafted, c_image_url FROM t_drink WHERE c_id={id}"
+    query = Drink.get_drink_query(id)
     
     cursor.execute(query)
     result = cursor.fetchone()
