@@ -4,8 +4,12 @@ from models.user import User
 
 users_api = Blueprint('user', __name__, url_prefix = '/api/user')
 
-#make sure this doesn't pull from .env, that just seems like a bad idea
-#secret_key = os.getenv('secret_key')
+#TODO:
+#create test user in db
+#check login success
+#check login fail
+#check logout
+#check session verify
 
 #POST login
 #verifies login against encrypted credentials and sets a session cookie for valid users
