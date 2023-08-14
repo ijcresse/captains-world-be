@@ -11,15 +11,22 @@ def get_db_config():
     
     for value in db_config:
         if value is None:
-            print("ERROR: one or more environment variables is missing!")
+            print("ERROR: missing database environment variable(s)!")
             sys.exit()
 
     return db_config
 
+def get_dir_config():
+    dir_config = {
+        'images' : os.getenv("CW_DIR_IMAGES"),
+        'extensions' : { 'jpg', 'jpeg', 'png', 'gif' }
+    }
+
+    if dir_config['images'] is None:
+        print("ERROR: missing directory environment variable(s)!")
+        sys.exit()
+
+    return dir_config
+
 def get_env_vars():
-    config = {}
-
-    #space for additional configs
-    config['DB'] = get_db_config()
-
-    return config
+    return (get_dir_config(), get_db_config())

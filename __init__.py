@@ -7,13 +7,15 @@ from config import get_env_vars
 def create_app():
     app = Flask(__name__)
 
-    app.config['ENV_VARS'] = get_env_vars()
+    # app.config['ENV_VARS'] = get_env_vars()
+    cw_dir, cw_db = get_env_vars()
+    app.config['DIR'] = cw_dir
+    app.config['DB'] = cw_db
     
     app.register_blueprint(health_api)
     app.register_blueprint(drinks_api)
 
     return app
-
 
 
 #GET /drink/search
