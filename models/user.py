@@ -9,7 +9,7 @@ class User:
         self.hashed_pw = bcrypt.hashpw(data['password'], salt)
 
     def check_pass(self, hashed_pw):
-        return self.hashed_pw == hashed_pw
+        return bcrypt.checkpw(self.hashed_pw, hashed_pw)
     
     def get_user_query(self):
         return f"SELECT c_username, c_password FROM t_users WHERE c_username='{self.username}'"
