@@ -1,6 +1,8 @@
 import os
 import sys
 
+from flask import current_app
+
 def get_db_config():
     db_config = {
         'host' : os.getenv("CW_DB_HOST"),
@@ -28,5 +30,18 @@ def get_dir_config():
 
     return dir_config
 
+def get_secret_config():
+    secret_config = {
+        'key' : current_app.config['SECRET_KEY'],
+        'salt' : current_app.config['BCRYPT_SALT']
+    }
+
+    for value in secret_config:
+        if value is None:
+            print("ERROR: missing secret environment variable(s)!")
+            sys.exit()
+
+    return secret_config
+
 def get_env_vars():
-    return (get_dir_config(), get_db_config())
+    return (get_dir_config(), get_db_config(), get_secret_config())

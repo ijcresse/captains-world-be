@@ -18,8 +18,10 @@ sudo apt-get install build-essential cargo
 #create .env file containing the following vars: 
 #directories: CW_DIR_IMAGES
 #images: CW_DB_HOST, CW_DB_USER, CW_DB_PASS, CW_DB_NAME
-#secret key used for session management. bcrypt salt used for comparing passwords
-python3 -m SECRET_KEY=<secret key> BCRYPT_SALT flask --app . run --debug
+#set secret runtime environment variables. salt must match what was used to set up db users.
+export FLASK_BCRYPT_SALT=<snip>
+export SECRET_KEY=<snip>
+python3 -m flask --app . run --debug
 ```
 
 ##Running in Production
