@@ -4,7 +4,7 @@ from flask import current_app, jsonify
 from werkzeug.utils import secure_filename
 
 def create_response(status, desc = "", data = []):
-    return jsonify({ 'status': status, 'desc' : desc, 'data': data })
+    return jsonify({ 'desc' : desc, 'data': data }), status
 
 def allowed_extensions(filename, extensions):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in extensions
