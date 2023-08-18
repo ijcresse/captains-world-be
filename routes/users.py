@@ -10,9 +10,12 @@ users_api = Blueprint('user', __name__, url_prefix = '/api/user')
 #check login success x
 #check login username fail x
 #check login password fail x
-#check logout
+#check logout x
 #check session verify x
 #check multiple active sessions verify < UH OH
+#follow option 1 here:
+#https://stackoverflow.com/questions/20314921/how-to-properly-and-securely-handle-cookies-and-sessions-in-pythons-flask
+#... then retest everything.
 
 #POST login
 #verifies login against encrypted credentials and sets a session cookie for valid users
