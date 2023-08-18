@@ -1,5 +1,6 @@
 from flask import Blueprint, request, session, current_app
-from route_util import create_response, get_db, close_db
+from .route_util import create_response
+from services.db import get_db, close_db
 from models.user import User
 
 users_api = Blueprint('user', __name__, url_prefix = '/api/user')
@@ -31,7 +32,7 @@ def login():
     result = cursor.fetchone()
     
     print(result)
-    valid_login = user.check_user(result['c_username'], result['c_password'])
+    valid_login = result is not None and user.check_user(result['c_username'], result['c_password'])
 
     if valid_login:
         print(f'setting username: {user.username}')

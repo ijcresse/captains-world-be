@@ -4,6 +4,7 @@ from flask import Flask
 
 from routes.health import health_api
 from routes.drinks import drinks_api
+from routes.users import users_api
 from config import get_env_vars
 
 def create_app():
@@ -22,10 +23,10 @@ def create_app():
     print(f"Session Cookie HTTP Only: {app.config['SESSION_COOKIE_HTTPONLY']}")
     print(f"Session Cookie Secure: {app.config['SESSION_COOKIE_SECURE']}")
     print(f"Secret Key set: {app.config['SECRET']['key'] is not None}")
-    print(f"Bcrypt Salt set: {app.config['SECRET']['salt'] is not None}")
     
     app.register_blueprint(health_api)
     app.register_blueprint(drinks_api)
+    app.register_blueprint(users_api)
 
     return app
 

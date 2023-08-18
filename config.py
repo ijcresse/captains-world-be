@@ -33,7 +33,6 @@ def get_dir_config():
 def get_secret_config():
     secret_config = {
         'key' : current_app.config['SECRET_KEY'],
-        'salt' : current_app.config['BCRYPT_SALT']
     }
 
     for value in secret_config:
