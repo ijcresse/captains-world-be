@@ -10,7 +10,7 @@ python3 -m pip install -r requirements.txt
 sudo apt-get install build-essential cargo
 #access mysql and source database setup script
 >source /path/to/project/scripts/db_setup.sql
-#create handmanaged user entries in captains_world.t_users. salt with bcrypt
+#create handmanaged user entries in captains_world.t_users.
 ```
 
 ##Running locally
@@ -18,8 +18,7 @@ sudo apt-get install build-essential cargo
 #create .env file containing the following vars: 
 #directories: CW_DIR_IMAGES
 #images: CW_DB_HOST, CW_DB_USER, CW_DB_PASS, CW_DB_NAME
-#set secret runtime environment variables. salt must match what was used to set up db users.
-export FLASK_BCRYPT_SALT=<snip>
+#set secret runtime environment variables.
 export SECRET_KEY=<snip>
 python3 -m flask --app . run --debug
 ```

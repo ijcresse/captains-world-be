@@ -32,7 +32,7 @@ def get_dir_config():
 
 def get_secret_config():
     secret_config = {
-        'key' : current_app.config['SECRET_KEY'],
+        'key' : os.environ.get("SECRET_KEY"),
     }
 
     for value in secret_config:

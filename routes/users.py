@@ -1,4 +1,4 @@
-from flask import Blueprint, request, session, current_app
+from flask import Blueprint, request, session
 from .route_util import create_response
 from services.db import get_db, close_db
 from models.user import User
@@ -6,11 +6,13 @@ from models.user import User
 users_api = Blueprint('user', __name__, url_prefix = '/api/user')
 
 #TODO:
-#create test user in db
-#check login success
-#check login fail
+#create test user in db x
+#check login success x
+#check login username fail x
+#check login password fail x
 #check logout
-#check session verify
+#check session verify x
+#check multiple active sessions verify < UH OH
 
 #POST login
 #verifies login against encrypted credentials and sets a session cookie for valid users

@@ -10,19 +10,18 @@ from config import get_env_vars
 def create_app():
     app = Flask(__name__)
 
-    app.config.from_prefixed_env()
-    with app.app_context():
-        cw_dir, cw_db, cw_secret = get_env_vars()
+    cw_dir, cw_db, cw_secret = get_env_vars()
     app.config['DIR'] = cw_dir
     app.config['DB'] = cw_db
-    app.config['SECRET'] = cw_secret
+    #app.config['SECRET'] = cw_secret
+    app.secret_key = cw_secret['key']
 
     print(f"Starting Captain's World Backend Server at {datetime.now()}")
     print(f"Debug Mode: {app.config['DEBUG']}")
     print(f"Image dir set to: {app.config['DIR']['images']}")
     print(f"Session Cookie HTTP Only: {app.config['SESSION_COOKIE_HTTPONLY']}")
     print(f"Session Cookie Secure: {app.config['SESSION_COOKIE_SECURE']}")
-    print(f"Secret Key set: {app.config['SECRET']['key'] is not None}")
+    print(f"Secret Key set: {app.secret_key is not None}")
     
     app.register_blueprint(health_api)
     app.register_blueprint(drinks_api)
