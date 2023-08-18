@@ -19,10 +19,8 @@ def login():
     if request.is_json is False:
         return create_response(status = 401, desc = "Missing login data")
 
-    salt = current_app.config['BCRYPT_SALT']
-
     data = request.get_json()
-    user = User(data, salt)
+    user = User(data)
 
     c = get_db()
     cursor = c.cursor()

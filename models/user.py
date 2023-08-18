@@ -2,13 +2,11 @@
 import bcrypt
 
 class User:
-    def __init__(self, data, salt):
+    def __init__(self, data):
         if 'username' not in data or 'password' not in data:
             raise ValueError("Missing user or password parameter")
         self.username = data['username']
-        pw_bytes = data['password'].encode('utf-8')
-        salt = salt.encode('utf-8')
-        self.hashed_pw = bcrypt.hashpw(pw_bytes, salt)
+        self.hashed_pw = data['password'].encode('utf-8')
 
     def check_user(self, username, hashed_pw):
         if username is None or self.username != username:
