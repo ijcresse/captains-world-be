@@ -66,3 +66,8 @@ CREATE TABLE t_users(
     c_password VARCHAR(255) NOT NULL,
     c_last_login TIMESTAMP
 );
+CREATE TABLE t_sessions(
+    c_id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    c_session_name VARCHAR(255) NOT NULL,
+    c_login_time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);

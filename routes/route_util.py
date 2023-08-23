@@ -1,4 +1,5 @@
 import os
+import time
 
 from flask import current_app, jsonify
 from werkzeug.utils import secure_filename
@@ -26,3 +27,6 @@ def save_image(img):
         return filename
     else:
         return ''
+    
+def current_milli_time():
+    return round(time.time() * 1000)

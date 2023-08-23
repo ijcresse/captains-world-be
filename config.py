@@ -8,7 +8,8 @@ def get_db_config():
         'host' : os.getenv("CW_DB_HOST"),
         'user' : os.getenv("CW_DB_USER"),
         'password' : os.getenv("CW_DB_PASS"),
-        'database'   : os.getenv("CW_DB_NAME")
+        'database'   : os.getenv("CW_DB_NAME"),
+        'session_timeout' : os.getenv("CW_DB_SESSION_DURATION")
     }
     
     for value in db_config:

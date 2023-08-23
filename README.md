@@ -16,9 +16,10 @@ sudo apt-get install build-essential cargo
 ##Running locally
 ```
 #create .env file containing the following vars: 
-#directories: CW_DIR_IMAGES
-#images: CW_DB_HOST, CW_DB_USER, CW_DB_PASS, CW_DB_NAME
-#set secret runtime environment variables.
+#directory: CW_DIR_IMAGES
+#database: CW_DB_HOST, CW_DB_USER, CW_DB_PASS, CW_DB_NAME, CW_DB_SESSION_DURATION (HH:MM:SS format)
+#flask: FLASK_SESSION_COOKIE_SECURE, FLASK_SESSION_COOKIE_HTTPONLY
+#set secret runtime environment variable:
 export SECRET_KEY=<snip>
 python3 -m flask --app . run --debug
 ```

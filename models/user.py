@@ -1,4 +1,3 @@
-#contains a few useful methods for interacting with users and validating their sessions.
 import bcrypt
 
 class User:
@@ -25,3 +24,16 @@ class User:
 
     def update_login_query(self):
         return f"UPDATE t_users SET c_last_login=NOW() where c_username='{self.username}'"
+    
+    @staticmethod
+    def create_session(session):
+        return f"INSERT INTO t_sessions (c_session_name) VALUES ('{session}')"
+    
+    @staticmethod
+    def fetch_session(session):
+        return f'SELECT c_id, c_login_time FROM t_sessions WHERE c_session_name="{session}"'
+    
+    @staticmethod
+    #forces going thru fetch_session for c_id first
+    def delete_session(session_id):
+        return f'DELETE FROM t_sessions WHERE c_id={session_id}'

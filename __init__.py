@@ -13,7 +13,6 @@ def create_app():
     cw_dir, cw_db, cw_secret = get_env_vars()
     app.config['DIR'] = cw_dir
     app.config['DB'] = cw_db
-    #app.config['SECRET'] = cw_secret
     app.secret_key = cw_secret['key']
 
     print(f"Starting Captain's World Backend Server at {datetime.now()}")
