@@ -1,8 +1,7 @@
 import secrets
-from datetime import datetime, timedelta
 
-from flask import Blueprint, request, session, current_app
-from .route_util import create_response, current_milli_time
+from flask import Blueprint, request, session
+from .route_util import create_response, is_authorized, delete_session
 from services.db import get_db, close_db
 from models.user import User
 
@@ -18,6 +17,7 @@ users_api = Blueprint('user', __name__, url_prefix = '/api/user')
 #check session verify with real session x
 #check session verify without real session x
 #check session verify with expired session
+#check enforcing auth on routes
 #check multiple active sessions verify (this... actually seems tough. how do i do this?)
 #probably need a cleanup script to get rid of dangling sessions (relogging in, for example)
 
@@ -84,46 +84,7 @@ def logout():
     
 @users_api.route("/session", methods=['POST'])
 def verify_session():
-    if 'username' in session:
-        session_name = session['username']
-        c = get_db()
-        cursor = c.cursor()
-        query = User.fetch_session(session_name)
-        cursor.execute(query)
-        result = cursor.fetchone()
-
-        if result is None:
-            close_db(c)
-            return create_response(401, desc = 'missing session')
-        else:
-            if session_is_active(result['c_login_time']):
-                return create_response(status = 200, desc = f'active session')
-            else:
-                delete_session(session_name, c)
-                return create_response(status = 401, desc = f'expired session')
-    return create_response(status = 401, desc = 'missing session')
-
-#deletes an active session. assumed to be last operation, closes connection
-def delete_session(session_name, c):
-    cursor = c.cursor()
-    query = User.fetch_session(session_name)
-    cursor.execute(query)
-    result = cursor.fetchone()
-
-    #no session found, no operation
-    if result is None:
-        close_db(c)
-        return False
+    if is_authorized():
+        return create_response(status = 200, desc = f'active session')
     else:
-        query = User.delete_session(result['c_id'])
-        cursor.execute(query)
-        c.commit()
-        close_db(c)
-        return True
-
-def session_is_active(login_time):
-    login_duration_env = current_app.config['DB']['session_timeout']
-    login_duration = datetime.strptime(login_duration_env, '%H:%M:%S')
-    logout_time = login_time + timedelta(hours = login_duration.hour)
-    current_time = datetime.now()
-    return logout_time > current_time
+        return create_response(status = 401, desc = 'missing session')
