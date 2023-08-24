@@ -1,7 +1,7 @@
 import os
 from flask import Blueprint, request
 
-from .route_util import create_response, save_image
+from .route_util import create_response, save_image, is_authorized
 from services.db import get_db, close_db
 from models.drink import Drink
 
@@ -32,6 +32,9 @@ def drink_desc(id):
 #posts a new drink object. returns an ID on success with which an image can be posted to.
 @drinks_api.route("/", methods=['POST'])
 def post_drink():
+    if not is_authorized():
+        return create_response(status = 401, desc = "secured endpoint")
+
     #process drink object from request
     if request.is_json is False:
         return create_response(status = 400, desc = "missing drink data")
@@ -56,9 +59,12 @@ def post_drink():
     else:
         return create_response(status = 500, desc = f"unable to post drink {drink.name} to db")
     
-
+#post image. follow up API to the POST drink metadata endpoint, requires ID returned from that
 @drinks_api.route("/<id>/img", methods=['POST'])
 def post_drink_image(id):
+    if not is_authorized():
+        return create_response(status = 401, desc = "secured endpoint")
+
     if 'file' not in request.files or request.files['file'].filename == '':
         return create_response(status = 400, desc = "missing image file")
 
