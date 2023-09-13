@@ -1,4 +1,5 @@
 from flask import Blueprint
+from flask_cors import cross_origin
 from .route_util import create_response, is_authorized
 
 health_api = Blueprint('health', __name__, url_prefix = '/api')

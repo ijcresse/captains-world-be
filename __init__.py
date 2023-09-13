@@ -1,6 +1,7 @@
 from datetime import datetime
 
 from flask import Flask
+from flask_cors import CORS
 
 from routes.health import health_api
 from routes.drinks import drinks_api
@@ -9,7 +10,10 @@ from config import get_env_vars
 
 def create_app():
     app = Flask(__name__)
-
+    allowed_origins = [r'http://localhost:5173', r'http://localhost:5000']
+    CORS(app, origins = allowed_origins)
+    
+    app.config['CORS_HEADERS'] = 'Content-Type'
     cw_dir, cw_db, cw_secret = get_env_vars()
     app.config['DIR'] = cw_dir
     app.config['DB'] = cw_db
