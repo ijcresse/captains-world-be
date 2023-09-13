@@ -13,13 +13,12 @@ def create_response(status, desc = "", data = []):
 def allowed_extensions(filename, extensions):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in extensions
 
-def save_image(img):
+def save_image(id, img):
     image_dir = current_app.config['DIR']['images']
     extensions = current_app.config['DIR']['extensions']
 
     if img and allowed_extensions(img.filename, extensions):
-        print('allowed ext')
-        filename = secure_filename(img.filename)
+        filename = secure_filename(f"{id}_{img.filename}")
         
         try:
             img.save(os.path.join(image_dir, filename))

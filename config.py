@@ -13,7 +13,7 @@ def get_db_config():
     }
     
     for value in db_config:
-        if value is None:
+        if db_config[value] is None:
             print("ERROR: missing database environment variable(s)!")
             sys.exit()
 
@@ -35,9 +35,8 @@ def get_secret_config():
     secret_config = {
         'key' : os.environ.get("SECRET_KEY"),
     }
-
     for value in secret_config:
-        if value is None:
+        if secret_config[value] is None:
             print("ERROR: missing secret environment variable(s)!")
             sys.exit()
 

@@ -70,13 +70,14 @@ def post_drink_image(id):
 
     img = request.files['file']
 
-    filename = save_image(img)
+    filename = save_image(id, img)
     if filename is None or filename == '':
         return create_response(status = 500, desc = "unable to save image to disk")
     else:
         c = get_db()
         cursor = c.cursor()
         query = Drink.post_drink_image_query(filename, id)
+        print(query)
         cursor.execute(query)
         c.commit()
         close_db(c)
