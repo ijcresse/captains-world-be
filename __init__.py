@@ -11,14 +11,15 @@ from config import get_env_vars
 def create_app():
     app = Flask(__name__)
     #allow captain's world webapp to hit server - designed to run on same host
-    allowed_origins = ['http://localhost:5173']
-    CORS(app, resources = {r'/api/*': {"origins": allowed_origins}})
     
     app.config['CORS_HEADERS'] = 'Content-Type'
-    cw_dir, cw_db, cw_secret = get_env_vars()
+    cw_dir, cw_db, cw_secret, cw_port = get_env_vars()
     app.config['DIR'] = cw_dir
     app.config['DB'] = cw_db
     app.secret_key = cw_secret['key']
+
+    allowed_origins = [f'http://localhost:{cw_port}']
+    CORS(app, resources = {r'/api/*': {"origins": allowed_origins}})
 
     print(f"Starting Captain's World Backend Server at {datetime.now()}")
     print(f"Debug Mode: {app.config['DEBUG']}")

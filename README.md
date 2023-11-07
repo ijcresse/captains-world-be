@@ -16,6 +16,7 @@ sudo apt-get install build-essential cargo
 ##Running locally
 ```
 #create .env file containing the following vars: 
+#website port (for dev vs prod access to frontend): CW_WEB_PORT
 #directory: CW_DIR_IMAGES
 #database: CW_DB_HOST, CW_DB_USER, CW_DB_PASS, CW_DB_NAME, CW_DB_SESSION_DURATION (HH:MM:SS format)
 #flask: FLASK_SESSION_COOKIE_SECURE, FLASK_SESSION_COOKIE_HTTPONLY
