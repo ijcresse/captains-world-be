@@ -10,9 +10,9 @@ from config import get_env_vars
 
 def create_app():
     app = Flask(__name__)
-    #allow captain's world webapp to hit server if running on same host
-    allowed_origins = [r'http://localhost:5173']
-    CORS(app, origins = allowed_origins)
+    #allow captain's world webapp to hit server - designed to run on same host
+    allowed_origins = ['http://localhost:5173']
+    CORS(app, resources = {r'/api/*': {"origins": allowed_origins}})
     
     app.config['CORS_HEADERS'] = 'Content-Type'
     cw_dir, cw_db, cw_secret = get_env_vars()

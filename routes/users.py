@@ -1,11 +1,13 @@
 import secrets
 
 from flask import Blueprint, request, session
+from flask_cors import CORS, cross_origin
 from .route_util import create_response, is_authorized, delete_session
 from services.db import get_db, close_db
 from models.user import User
 
 users_api = Blueprint('user', __name__, url_prefix = '/api/user')
+CORS(users_api, resources = {r'/api/*': {"origins": "http://localhost:5173"}})
 
 #TODO:
 #create test user in db x
@@ -37,7 +39,6 @@ def login():
     
     cursor.execute(query)
     result = cursor.fetchone()
-    
     valid_login = result is not None and user.check_user(result['c_username'], result['c_password'])
 
     if valid_login:
