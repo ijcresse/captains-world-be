@@ -28,11 +28,12 @@ def drink_desc(id):
 
     return create_response(status = 200, data = [result])
 
-#POST /drink/
+#POST /drink/new
 #request object: drink (required)
 #posts a new drink object. returns an ID on success with which an image can be posted to.
-@drinks_api.route("/", methods=['POST'])
+@drinks_api.route("/new", methods=['POST'])
 def post_drink():
+    print('post drink')
     if not is_authorized():
         return create_response(status = 401, desc = "secured endpoint")
 
@@ -61,7 +62,7 @@ def post_drink():
         return create_response(status = 500, desc = f"unable to post drink {drink.name} to db")
     
 #post image. follow up API to the POST drink metadata endpoint, requires ID returned from that
-@drinks_api.route("/<id>/img", methods=['POST'])
+@drinks_api.route("/new/<id>/img", methods=['POST'])
 def post_drink_image(id):
     if not is_authorized():
         return create_response(status = 401, desc = "secured endpoint")

@@ -1,7 +1,7 @@
 import secrets
 
 from flask import Blueprint, request, session
-from flask_cors import CORS, cross_origin
+from flask_cors import CORS
 from .route_util import create_response, is_authorized, delete_session
 from services.db import get_db, close_db
 from models.user import User
