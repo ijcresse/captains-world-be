@@ -1,12 +1,10 @@
 from flask import Blueprint, request
 
-from flask_cors import CORS
 from .route_util import create_response, save_image, is_authorized
 from services.db import get_db, close_db
 from models.drink import Drink
 
 drinks_api = Blueprint('drink', __name__, url_prefix = '/api/drink')
-CORS(drinks_api, resources = {r'/api/*': {"origins": "http://localhost:5173"}})
 
 #GET /drink
 #queryparams: id (required)

@@ -20,7 +20,6 @@ class User:
         #return self.username == username and bcrypt.checkpw(self.hashed_pw, hashed_pw)
     
     def get_user_query(self):
-        print(self.username)
         return f"SELECT c_username, c_password FROM t_users WHERE c_username='{self.username}'"
 
     def update_login_query(self):

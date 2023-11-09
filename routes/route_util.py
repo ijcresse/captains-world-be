@@ -32,8 +32,8 @@ def save_image(id, img):
 
 #checks if the current session is authorized. deletes if the session is expired.
 def is_authorized():
-    if 'username' in session:
-        session_name = session['username']
+    if 'cw-session' in session:
+        session_name = session['cw-session']
         c = get_db()
         cursor = c.cursor()
         query = User.fetch_session(session_name)
@@ -75,7 +75,7 @@ def delete_session(session_name, c):
         c.commit()
         close_db(c)
 
-        session.pop('username', None)
+        session.pop('cw-session', None)
 
         return True
 

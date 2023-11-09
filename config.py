@@ -1,15 +1,6 @@
 import os
 import sys
 
-from flask import current_app
-
-def get_port_config():
-    port = os.getenv("CW_WEB_PORT")
-    if port is None:
-        print("ERROR: missing port environment variable!")
-        sys.exit()
-    return port
-
 def get_db_config():
     db_config = {
         'host' : os.getenv("CW_DB_HOST"),
@@ -49,5 +40,25 @@ def get_secret_config():
 
     return secret_config
 
+def get_port_config():
+    port = os.getenv("CW_WEB_PORT")
+    if port is None:
+        print("ERROR: missing port environment variable!")
+        sys.exit()
+    return port
+
+def get_flask_config():
+    flask_config = {
+        'cookie_httponly' : os.getenv('CW_COOKIE_HTTPONLY'),
+        'cookie_secure' : os.getenv('CW_COOKIE_SECURE'),
+        'cookie_samesite' : os.getenv('CW_COOKIE_SAMESITE')
+    }
+
+    for value in flask_config:
+        if flask_config[value] is None:
+            print("ERROR: missing flask configuration env vars!")
+            sys.exit()
+    return flask_config
+
 def get_env_vars():
-    return (get_dir_config(), get_db_config(), get_secret_config(), get_port_config())
+    return (get_dir_config(), get_db_config(), get_secret_config(), get_port_config(), get_flask_config())

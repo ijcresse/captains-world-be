@@ -37,17 +37,13 @@ captains_world/
     /images #containing image urls for uploaded content. db will host these image names.
     /server #containing production code for this project
 
-##bcrypt notes
-ok. flow this out
-enter password into file
-encrypt file with bcrypt
-enter bfe blob into database
-
-during login, user passes user + pass
-fetch user to match that user from db
-if None, exit. 401, no user found
-else
-    use bcrypt on userprovided password with os envvar provided encryption key
-    if the encrypted result matches what's in the db, the user is valid
-    store session (random os base64 val) and return session cookie to user
-    that user is valid for however long flask decides it's valid for. look into that.
+### cors and cookie notes
+#### for dev:
+in order to send cookies across http from the FE origin (:5173) to the BE origin (:5000):
+secure: false
+samesite: lax
+#### for prod:
+in order to send cookies across https from webapp origin (:443) to server origin (:5000):
+httponly: false
+secure: true
+samesite: none
