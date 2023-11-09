@@ -1,7 +1,7 @@
-#Captain's World Server
+# Captain's World Server
 A simple REST API to service requests for the Captain's World website. Runs on Flask.
 
-##Installation
+## Installation
 ```
 python3 -m venv .venv
 . .venv/bin/activate #start venv
@@ -13,7 +13,7 @@ sudo apt-get install build-essential cargo
 #create handmanaged user entries in captains_world.t_users.
 ```
 
-##Running locally
+## Running locally
 ```
 #create .env file containing the following vars: 
 #website port (for dev vs prod access to frontend): CW_WEB_PORT
@@ -27,23 +27,19 @@ export SECRET_KEY=<snip>
 python3 -m flask --app . run --debug
 ```
 
-##Running in Production
+## Running in Production
 todo
 
-##Structure
+## Structure
 react FE -> flask BE -> sql DB
 captains_world/
     /views #containing static site content
     /images #containing image urls for uploaded content. db will host these image names.
     /server #containing production code for this project
 
-### cors and cookie notes
-#### for dev:
-in order to send cookies across http from the FE origin (:5173) to the BE origin (:5000):
-secure: false
-samesite: lax
-#### for prod:
-in order to send cookies across https from webapp origin (:443) to server origin (:5000):
+### cors and cookie note
+this is mostly a note for myself so i don't have to dig around.
+in order to send cookies across https from webapp origin to server origin:
 httponly: false
 secure: true
 samesite: none
