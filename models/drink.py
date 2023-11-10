@@ -11,8 +11,8 @@ class Drink:
             self.drink_type = data['drink_type']
             self.date_enjoyed = data['date_enjoyed']
             self.desc = data['desc']
-        #else:
-            #throw some exception
+        else:
+            raise Exception('Missing or malformed parameters')
 
         if data['sake_type'] is not None or type(data['sake_type']) in SakeType:
             self.sake_type = data['sake_type']
@@ -28,7 +28,7 @@ class Drink:
         #     errors.append('ID missing or malformed')
         if 'name' not in data or type(data['name']) != str:
             errors.append('Name missing or malformed')
-        if 'drink_type' not in data or data['drink_type'] not in DrinkType.__members__:
+        if 'drink_type' not in data or data['drink_type'].upper() not in DrinkType.__members__:
             errors.append('Drink type missing or malformed')
         if 'date_enjoyed' not in data or not self.validate_iso_date(data['date_enjoyed']):
             errors.append("DateEnjoyed missing or malformed")
@@ -42,7 +42,6 @@ class Drink:
     def validate_iso_date(self, data):
         try:
             timestamp = dateutil.parser.isoparse(data)
-            print(f"success! {timestamp}")
         except ValueError:
             print('LOG THIS: DateEnjoyed string is malformed')
             return False

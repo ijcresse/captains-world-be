@@ -1,4 +1,4 @@
-from flask import Blueprint, request, make_response
+from flask import Blueprint, request, jsonify
 
 from .route_util import save_image, is_authorized, _build_cors_preflight_response, _make_cors_response
 from services.db import get_db, close_db
@@ -18,7 +18,7 @@ def drink_desc(id):
 
     if id is None:
         res.status = 400
-        res.data = 'Missing ID'
+        res.set_data('Missing ID')
         return res
     
     c = get_db()
@@ -30,9 +30,9 @@ def drink_desc(id):
     close_db(c)
 
     #check for errors, adjust response as necessary
-
-    res.data = [result]
-    return res
+    json = jsonify(result)
+    json.headers = res.headers
+    return json
 
 #POST /drink/new
 #request object: drink (required)
@@ -46,17 +46,22 @@ def post_drink():
 
     if not is_authorized():
         res.status = 401
-        res.data = 'Secured endpoint'
+        res.set_data('Secured endpoint')
         return res
 
     #process drink object from request
     if request.is_json is False:
         res.status = 400
-        res.data = 'Missing drink data'
+        res.set_data('Missing drink data')
         return res
     
     data = request.get_json()
-    drink = Drink(data)
+    try:
+        drink = Drink(data)
+    except:
+        res.status = 400
+        res.set_data('One or more parameters is malformed or missing.')
+        return res
 
     c = get_db()
     cursor = c.cursor()
@@ -72,11 +77,12 @@ def post_drink():
     close_db(c)
     
     if row['c_name'] == drink.name:
-        res.data = {'id' : row['c_id']}
-        return res
+        json = jsonify({'id' : row['c_id']})
+        json.headers = res.headers
+        return json
     else:
         res.status = 500
-        res.data = f"unable to post drink {drink.name} to db"
+        res.set_data(f"unable to post drink {drink.name} to db")
         return res
     
 #post image. follow up API to the POST drink metadata endpoint, requires ID returned from that
@@ -89,12 +95,12 @@ def post_drink_image(id):
 
     if not is_authorized():
         res.status = 401
-        res.data = "Secured endpoint"
+        res.set_data("Secured endpoint")
         return res
 
     if 'file' not in request.files or request.files['file'].filename == '':
         res.status = 400
-        res.data = "Missing image file"
+        res.set_data("Missing image file")
         return res
 
     img = request.files['file']
@@ -102,7 +108,7 @@ def post_drink_image(id):
     filename = save_image(id, img)
     if filename is None or filename == '':
         res.status = 500
-        res.data = "Unable to save image to disk"
+        res.set_data("Unable to save image to disk")
         return res
     else:
         c = get_db()
@@ -114,7 +120,7 @@ def post_drink_image(id):
         close_db(c)
 
         #what if this fails, or get a bad id?
-        res.data = f"saved {filename} to disk"
+        res.set_data(f"saved {filename} to disk")
         return res
 
 
@@ -142,5 +148,6 @@ def drink_list():
     result = cursor.fetchall()
     close_db()
     
-    res.data = [result]
-    return res
+    json = jsonify(result)
+    json.headers = res.headers
+    return json

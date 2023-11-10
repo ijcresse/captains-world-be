@@ -18,7 +18,7 @@ def login():
 
     if request.is_json is False:
         res.status = 400
-        res.data = 'Missing login data'
+        res.set_data('Missing login data')
         return res
 
     data = request.get_json()
@@ -47,7 +47,7 @@ def login():
             print(f'failed to create session for session {session_name}')
             print(e)
             res.status = 500
-            res.data = 'Failed to create a valid session'
+            res.set_data('Failed to create a valid session')
             return res
         finally:
             close_db(c)
@@ -63,7 +63,7 @@ def login():
     else:
         close_db(c)
         res.status = 401
-        res.data = 'Failed to validate credentials'
+        res.set_data('Failed to validate credentials')
         return res
 
 @users_api.route("/logout", methods=['GET', 'OPTIONS'])
