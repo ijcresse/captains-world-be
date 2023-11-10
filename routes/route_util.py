@@ -1,7 +1,7 @@
 import os
 
 from datetime import datetime, timedelta
-from flask import current_app, jsonify, session
+from flask import current_app, jsonify, session, make_response
 from werkzeug.utils import secure_filename
 
 from models.user import User
@@ -79,3 +79,17 @@ def delete_session(session_name, c):
 
         return True
 
+def _build_cors_preflight_response(origin):
+    res = make_response()
+    res.headers.add('Access-Control-Allow-Origin', origin)
+    res.headers.add('Access-Control-Allow-Credentials', 'true')
+    res.headers.add('Access-Control-Allow-Methods', "GET, PUT, POST, OPTIONS")
+    res.headers.add('Access-Control-Allow-Headers', 'Access-Control-Allow-Origin, Access-Control-Allow-Credentials, content-type, content-length')
+    res.headers.add('Access-Control-Expose-Headers', 'Access-Control-Allow-Origin, Access-Control-Allow-Credentials, content-type, content-length')
+    return res
+
+def _make_cors_response(origin):
+    res = make_response()
+    res.headers.add('Access-Control-Allow-Origin', origin)
+    res.headers.add('Access-Control-Allow-Credentials', 'true')
+    return res

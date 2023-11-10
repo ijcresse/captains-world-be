@@ -11,6 +11,8 @@ class Drink:
             self.drink_type = data['drink_type']
             self.date_enjoyed = data['date_enjoyed']
             self.desc = data['desc']
+        #else:
+            #throw some exception
 
         if data['sake_type'] is not None or type(data['sake_type']) in SakeType:
             self.sake_type = data['sake_type']

@@ -1,6 +1,6 @@
-from flask import Blueprint, request
+from flask import Blueprint, request, make_response
 
-from .route_util import create_response, save_image, is_authorized
+from .route_util import save_image, is_authorized, _build_cors_preflight_response, _make_cors_response
 from services.db import get_db, close_db
 from models.drink import Drink
 
@@ -9,10 +9,17 @@ drinks_api = Blueprint('drink', __name__, url_prefix = '/api/drink')
 #GET /drink
 #queryparams: id (required)
 #gets detailed info about given drink ID
-@drinks_api.route("/<id>", methods=['GET'])
+@drinks_api.route("/<id>", methods=['GET', 'OPTIONS'])
 def drink_desc(id):
+    if request.method == 'OPTIONS':
+        return _build_cors_preflight_response(request.origin)
+    
+    res = _make_cors_response(request.origin)
+
     if id is None:
-        return create_response(status = 400, desc = "missing id")
+        res.status = 400
+        res.data = 'Missing ID'
+        return res
     
     c = get_db()
     cursor = c.cursor()
@@ -24,20 +31,30 @@ def drink_desc(id):
 
     #check for errors, adjust response as necessary
 
-    return create_response(status = 200, data = [result])
+    res.data = [result]
+    return res
 
 #POST /drink/new
 #request object: drink (required)
 #posts a new drink object. returns an ID on success with which an image can be posted to.
-@drinks_api.route("/new", methods=['POST'])
+@drinks_api.route("/new", methods=['POST', 'OPTIONS'])
 def post_drink():
-    print('post drink')
+    if request.method == 'OPTIONS':
+        return _build_cors_preflight_response(request.origin)
+    
+    res = _make_cors_response(request.origin)
+
     if not is_authorized():
-        return create_response(status = 401, desc = "secured endpoint")
+        res.status = 401
+        res.data = 'Secured endpoint'
+        return res
 
     #process drink object from request
     if request.is_json is False:
-        return create_response(status = 400, desc = "missing drink data")
+        res.status = 400
+        res.data = 'Missing drink data'
+        return res
+    
     data = request.get_json()
     drink = Drink(data)
 
@@ -55,24 +72,38 @@ def post_drink():
     close_db(c)
     
     if row['c_name'] == drink.name:
-        return create_response(status = 200, data = {'id' : row['c_id']})
+        res.data = {'id' : row['c_id']}
+        return res
     else:
-        return create_response(status = 500, desc = f"unable to post drink {drink.name} to db")
+        res.status = 500
+        res.data = f"unable to post drink {drink.name} to db"
+        return res
     
 #post image. follow up API to the POST drink metadata endpoint, requires ID returned from that
-@drinks_api.route("/new/<id>/img", methods=['POST'])
+@drinks_api.route("/new/<id>/img", methods=['POST', 'OPTIONS'])
 def post_drink_image(id):
+    if request.method == 'OPTIONS':
+        return _build_cors_preflight_response(request.origin)
+    
+    res = _make_cors_response(request.origin)
+
     if not is_authorized():
-        return create_response(status = 401, desc = "secured endpoint")
+        res.status = 401
+        res.data = "Secured endpoint"
+        return res
 
     if 'file' not in request.files or request.files['file'].filename == '':
-        return create_response(status = 400, desc = "missing image file")
+        res.status = 400
+        res.data = "Missing image file"
+        return res
 
     img = request.files['file']
 
     filename = save_image(id, img)
     if filename is None or filename == '':
-        return create_response(status = 500, desc = "unable to save image to disk")
+        res.status = 500
+        res.data = "Unable to save image to disk"
+        return res
     else:
         c = get_db()
         cursor = c.cursor()
@@ -81,16 +112,22 @@ def post_drink_image(id):
         cursor.execute(query)
         c.commit()
         close_db(c)
-        #what if this fails, or get a bad id?
 
-        return create_response(status = 200, desc = f"saved {filename} to disk")
+        #what if this fails, or get a bad id?
+        res.data = f"saved {filename} to disk"
+        return res
 
 
 #GET /drink/list
 #queryparams: limit, offset
 #gets data and metadata about various drinks. default 20 drinks, max 50 per request.
-@drinks_api.route("/list", methods=['GET'])
+@drinks_api.route("/list", methods=['GET', 'OPTIONS'])
 def drink_list():
+    if request.method == 'OPTIONS':
+        return _build_cors_preflight_response(request.origin)
+    
+    res = _make_cors_response(request.origin)
+
     limit = request.args.get('limit') if request.args.get('limit') is not None else 20
     offset = request.args.get('offset') if request.args.get('offset') is not None else 0
     limit = 50 if limit > 50 else limit
@@ -105,5 +142,5 @@ def drink_list():
     result = cursor.fetchall()
     close_db()
     
-    return create_response(status = 200, data = [result])
-    #check for errors
+    res.data = [result]
+    return res
