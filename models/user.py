@@ -5,14 +5,14 @@ class User:
         if 'username' not in data or 'password' not in data:
             raise ValueError("Missing user or password parameter")
         self.username = data['username']
-        self.hashed_pw = data['password'].encode('utf-8')
+        self.password = data['password'].encode('utf-8')
 
     def check_user(self, username, hashed_pw):
         if username is None or self.username != username:
             return False
         try:
             hashed_pw = hashed_pw.encode('utf-8')
-            return bcrypt.checkpw(self.hashed_pw, hashed_pw)
+            return bcrypt.checkpw(self.password, hashed_pw)
         except ValueError as ve:
             print("Failure to check password via bcrypt")
             print(ve)

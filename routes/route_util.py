@@ -1,7 +1,7 @@
 import os
 
 from datetime import datetime, timedelta
-from flask import current_app, jsonify, session
+from flask import current_app, jsonify, session, make_response
 from werkzeug.utils import secure_filename
 
 from models.user import User
@@ -13,13 +13,12 @@ def create_response(status, desc = "", data = []):
 def allowed_extensions(filename, extensions):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in extensions
 
-def save_image(img):
+def save_image(id, img):
     image_dir = current_app.config['DIR']['images']
     extensions = current_app.config['DIR']['extensions']
 
     if img and allowed_extensions(img.filename, extensions):
-        print('allowed ext')
-        filename = secure_filename(img.filename)
+        filename = secure_filename(f"{id}_{img.filename}")
         
         try:
             img.save(os.path.join(image_dir, filename))
@@ -33,8 +32,8 @@ def save_image(img):
 
 #checks if the current session is authorized. deletes if the session is expired.
 def is_authorized():
-    if 'username' in session:
-        session_name = session['username']
+    if 'cw-session' in session:
+        session_name = session['cw-session']
         c = get_db()
         cursor = c.cursor()
         query = User.fetch_session(session_name)
@@ -76,7 +75,21 @@ def delete_session(session_name, c):
         c.commit()
         close_db(c)
 
-        session.pop('username', None)
+        session.pop('cw-session', None)
 
         return True
 
+def _build_cors_preflight_response(origin):
+    res = make_response()
+    res.headers.add('Access-Control-Allow-Origin', origin)
+    res.headers.add('Access-Control-Allow-Credentials', 'true')
+    res.headers.add('Access-Control-Allow-Methods', "GET, PUT, POST, OPTIONS")
+    res.headers.add('Access-Control-Allow-Headers', 'Access-Control-Allow-Origin, Access-Control-Allow-Credentials, content-type, content-length')
+    res.headers.add('Access-Control-Expose-Headers', 'Access-Control-Allow-Origin, Access-Control-Allow-Credentials, content-type, content-length')
+    return res
+
+def _make_cors_response(origin):
+    res = make_response()
+    res.headers.add('Access-Control-Allow-Origin', origin)
+    res.headers.add('Access-Control-Allow-Credentials', 'true')
+    return res

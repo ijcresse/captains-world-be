@@ -1,5 +1,5 @@
 from flask import Blueprint
-from .route_util import create_response, is_authorized
+from .route_util import create_response
 
 health_api = Blueprint('health', __name__, url_prefix = '/api')
 

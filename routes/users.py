@@ -1,32 +1,25 @@
 import secrets
 
-from flask import Blueprint, request, session
-from .route_util import create_response, is_authorized, delete_session
+from flask import Blueprint, request, session, current_app
+from .route_util import is_authorized, delete_session, _build_cors_preflight_response, _make_cors_response
 from services.db import get_db, close_db
 from models.user import User
 
 users_api = Blueprint('user', __name__, url_prefix = '/api/user')
 
-#TODO:
-#create test user in db x
-#check login success x
-#check login username fail x
-#check login password fail x
-#check logout with real session x
-#check logout with no session x
-#check session verify with real session x
-#check session verify without real session x
-#check session verify with expired session
-#check enforcing auth on routes
-#check multiple active sessions verify (this... actually seems tough. how do i do this?)
-#probably need a cleanup script to get rid of dangling sessions (relogging in, for example)
-
 #POST login
 #verifies login against encrypted credentials and sets a session cookie for valid users
-@users_api.route("/login", methods=['POST'])
+@users_api.route("/login", methods=['POST', 'OPTIONS'])
 def login():
+    if request.method == 'OPTIONS':
+        return _build_cors_preflight_response(request.origin)
+
+    res = _make_cors_response(request.origin)
+
     if request.is_json is False:
-        return create_response(status = 401, desc = "Missing login data")
+        res.status = 400
+        res.set_data('Missing login data')
+        return res
 
     data = request.get_json()
     user = User(data)
@@ -37,7 +30,6 @@ def login():
     
     cursor.execute(query)
     result = cursor.fetchone()
-    
     valid_login = result is not None and user.check_user(result['c_username'], result['c_password'])
 
     if valid_login:
@@ -54,37 +46,58 @@ def login():
         except Exception as e:
             print(f'failed to create session for session {session_name}')
             print(e)
-            return create_response(status = 500, desc = "failed to create valid session")
+            res.status = 500
+            res.set_data('Failed to create a valid session')
+            return res
         finally:
             close_db(c)
         
-        session['username'] = session_name
-
-        return create_response(status = 200, desc = "successful login")
+        session['cw-session'] = session_name
+        one_day = 60 * 60 * 24
+        res.set_cookie('cw-session', session_name,
+                        max_age=one_day,
+                        path='/',
+                        secure=current_app.config['SESSION_COOKIE_SECURE'],
+                        samesite=current_app.config['SESSION_COOKIE_SAMESITE']) # this should pull from current_app.config
+        return res
     else:
         close_db(c)
-        return create_response(status = 401, desc = "invalid username or password")
-    
+        res.status = 401
+        res.set_data('Failed to validate credentials')
+        return res
 
-@users_api.route("/logout")
+@users_api.route("/logout", methods=['GET', 'OPTIONS'])
 def logout():
-    session_name = session.pop('username', None)
+    if request.method == 'OPTIONS':
+        return _build_cors_preflight_response(request.origin)
+    
+    res = _make_cors_response(request.origin)
+
+    session_name = session.pop('cw-session', None)
 
     if session_name is None:
-        return create_response(status = 204)
+        res.status = 204
+        return res
 
     c = get_db()
     successful_deletion = delete_session(session_name, c)
 
     if successful_deletion:
-        return create_response(status = 200, desc = 'logged out')
+        return res
     else:
-        #no session found, user is effectively logged out already
-        return create_response(status = 204)
+        #user is effectively logged out anyway. no content = no action
+        res.status = 204
+        return res
     
-@users_api.route("/session", methods=['POST'])
+@users_api.route("/session", methods=['GET', 'OPTIONS'])
 def verify_session():
+    if request.method == 'OPTIONS':
+        return _build_cors_preflight_response(request.origin)
+    
+    res = _make_cors_response(request.origin)
+
     if is_authorized():
-        return create_response(status = 200, desc = f'active session')
+        return res
     else:
-        return create_response(status = 401, desc = 'missing session')
+        res.status = 401
+        return res
