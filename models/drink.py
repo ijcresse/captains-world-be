@@ -59,12 +59,29 @@ class Drink:
 
     @staticmethod
     def get_drink_query(id):
-        return f"SELECT c_name, c_drink_type, c_sake_type, c_date_enjoyed, c_description, c_image_url FROM t_drink WHERE c_id={id}"
+        return f"SELECT c_name, c_drink_type, c_sake_type, c_date_enjoyed, c_date_crafted, c_description, c_image_url FROM t_drink WHERE c_id={id}"
 
     @staticmethod
     def get_drinks_query(limit, offset):
         return f"SELECT c_id, c_name, c_drink_type, c_sake_type, c_date_crafted, c_image_url FROM t_drink LIMIT {limit} OFFSET {offset}"
 
+    @staticmethod
+    def update_drinks_query(id, update):
+        return f"UPDATE t_drink 
+            SET c_name = {update.name}, 
+                c_drink_type = {update.drink_type},
+                c_sake_type = {update.sake_type}, 
+                c_date_crafted = {update.date_crafted}, 
+                c_date_enjoyed = {update.date_enjoyed}, 
+                c_description = {update.desc} 
+            WHERE c_id={id}
+            "
+    
+    @staticmethod
+    def update_drinks_image_query(id, imgUrl):
+        return f"UPDATE t_drink
+            SET c_image_url = {imgUrl} 
+            WHERE c_id={id}"
 
 class DrinkType(Enum):
     OTHER = 0
