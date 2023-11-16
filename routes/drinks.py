@@ -134,8 +134,8 @@ def drink_list():
     
     res = _make_cors_response(request.origin)
 
-    limit = request.args.get('limit') if request.args.get('limit') is not None else 20
-    offset = request.args.get('offset') if request.args.get('offset') is not None else 0
+    limit = int(request.args.get('limit')) if request.args.get('limit') is not None else 12
+    offset = int(request.args.get('offset')) if request.args.get('offset') is not None else 0
     limit = 50 if limit > 50 else limit
     
     connection = get_db()

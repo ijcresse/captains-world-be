@@ -10,6 +10,7 @@ class Drink:
             self.name = data['name']
             self.drink_type = data['drink_type']
             self.date_enjoyed = data['date_enjoyed']
+            self.date_crafted = data['date_crafted']
             self.desc = data['desc']
         else:
             raise Exception('Missing or malformed parameters')
@@ -30,6 +31,8 @@ class Drink:
             errors.append('Name missing or malformed')
         if 'drink_type' not in data or data['drink_type'].upper() not in DrinkType.__members__:
             errors.append('Drink type missing or malformed')
+        if 'date_crafted' not in data or not self.validate_iso_date(data['date_crafted']):
+            errors.append("DateCrafted missing or malformed")
         if 'date_enjoyed' not in data or not self.validate_iso_date(data['date_enjoyed']):
             errors.append("DateEnjoyed missing or malformed")
         if 'desc' not in data or type(data['desc']) != str:
@@ -41,14 +44,14 @@ class Drink:
 
     def validate_iso_date(self, data):
         try:
-            timestamp = dateutil.parser.isoparse(data)
+            dateutil.parser.isoparse(data)
         except ValueError:
             print('LOG THIS: DateEnjoyed string is malformed')
             return False
         return True
 
     def post_drink_query(self):
-        return f"INSERT INTO t_drink (c_name, c_drink_type, c_sake_type, c_date_enjoyed, c_description) VALUES ('{self.name}', '{self.drink_type}', '{self.sake_type}', '{self.date_enjoyed}', '{self.desc}')"
+        return f"INSERT INTO t_drink (c_name, c_drink_type, c_sake_type, c_date_crafted, c_date_enjoyed, c_description) VALUES ('{self.name}', '{self.drink_type}', '{self.sake_type}', '{self.date_crafted}', '{self.date_enjoyed}', '{self.desc}')"
 
     @staticmethod
     def post_drink_image_query(filename, id):
