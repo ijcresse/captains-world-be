@@ -67,7 +67,8 @@ class Drink:
 
     @staticmethod
     def update_drinks_query(id, update):
-        return f"UPDATE t_drink 
+        return f"""
+            UPDATE t_drink 
             SET c_name = {update.name}, 
                 c_drink_type = {update.drink_type},
                 c_sake_type = {update.sake_type}, 
@@ -75,13 +76,15 @@ class Drink:
                 c_date_enjoyed = {update.date_enjoyed}, 
                 c_description = {update.desc} 
             WHERE c_id={id}
-            "
+            """
     
     @staticmethod
     def update_drinks_image_query(id, imgUrl):
-        return f"UPDATE t_drink
+        return f"""
+            UPDATE t_drink
             SET c_image_url = {imgUrl} 
-            WHERE c_id={id}"
+            WHERE c_id={id}
+            """
 
 class DrinkType(Enum):
     OTHER = 0
