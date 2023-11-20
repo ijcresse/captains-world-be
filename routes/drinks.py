@@ -34,6 +34,29 @@ def drink_desc(id):
     json.headers = res.headers
     return json
 
+#PUT /drink/<id>/edit
+#queryparams: id (requred)
+#updates drink information based on what's present.
+@drinks_api.route("/<id>/edit", methods=['PUT', 'OPTIONS'])
+def update_drink(id):
+    if request.method == 'OPTIONS':
+        return _build_cors_preflight_response(request.origin)
+    
+    res = _make_cors_response(request.origin)
+
+    if not is_authorized():
+        res.status = 401
+        res.set_data('Secured endpoint')
+        return res
+
+    if id is None:
+        res.status = 400
+        res.set_data('Missing ID')
+        return res
+
+    
+
+
 #POST /drink/new
 #request object: drink (required)
 #posts a new drink object. returns an ID on success with which an image can be posted to.
