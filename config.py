@@ -40,13 +40,6 @@ def get_secret_config():
 
     return secret_config
 
-def get_port_config():
-    port = os.getenv("CW_WEB_PORT")
-    if port is None:
-        print("ERROR: missing port environment variable!")
-        sys.exit()
-    return port
-
 def get_flask_config():
     flask_config = {
         'cookie_httponly' : os.getenv('CW_COOKIE_HTTPONLY'),
@@ -61,4 +54,4 @@ def get_flask_config():
     return flask_config
 
 def get_env_vars():
-    return (get_dir_config(), get_db_config(), get_secret_config(), get_port_config(), get_flask_config())
+    return (get_dir_config(), get_db_config(), get_secret_config(), get_flask_config())

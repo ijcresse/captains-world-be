@@ -12,8 +12,7 @@ def create_app():
     app = Flask(__name__)
     #allow captain's world webapp to hit server - designed to run on same host
     
-    #app.config['CORS_HEADERS'] = 'Content-Type'
-    cw_dir, cw_db, cw_secret, cw_port, cw_flask = get_env_vars()
+    cw_dir, cw_db, cw_secret, cw_flask = get_env_vars()
     app.config['DIR'] = cw_dir
     app.config['DB'] = cw_db
     app.secret_key = cw_secret['key']
@@ -22,8 +21,6 @@ def create_app():
         SESSION_COOKIE_SECURE = cw_flask['cookie_secure'],
         SESSION_COOKIE_SAMESITE = cw_flask['cookie_samesite']
     )
-    allowed_origins = [f'http://localhost:{cw_port}']
-    #CORS(app, resources = {r'/api/*': {"origins": allowed_origins}})
 
     print(f"Starting Captain's World Backend Server at {datetime.now()}")
     print(f"Debug Mode: {app.config['DEBUG']}")

@@ -16,7 +16,6 @@ sudo apt-get install build-essential cargo
 ## Running locally
 ```
 #create .env file containing the following vars: 
-#website port (for dev vs prod access to frontend): CW_WEB_PORT
 #directory: CW_DIR_IMAGES
 #database: CW_DB_HOST, CW_DB_USER, CW_DB_PASS, CW_DB_NAME, CW_DB_SESSION_DURATION (HH:MM:SS format)
 #flask: FLASK_SESSION_COOKIE_SECURE, FLASK_SESSION_COOKIE_HTTPONLY
@@ -27,8 +26,21 @@ export SECRET_KEY=<snip>
 python3 -m flask --app . run --debug
 ```
 
+## Building for Production
+```
+#get on deploy environment
+#clone code
+#export all environment variables into the terminal
+#configure wsgi, add context to nginx installation
+https://www.digitalocean.com/community/tutorials/how-to-serve-flask-applications-with-uwsgi-and-nginx-on-ubuntu-22-04
+https://uwsgi-docs.readthedocs.io/en/latest/Nginx.html
+#verify /api/health can be hit and returns 200 OK
+```
+
 ## Running in Production
-todo
+```
+
+```
 
 ## Structure
 react FE -> flask BE -> sql DB
