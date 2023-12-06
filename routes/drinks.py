@@ -54,8 +54,25 @@ def update_drink(id):
         res.set_data('Missing ID')
         return res
 
+#GET /drink/<id>/count
+#returns a number representing the total drinks in the database.
+#use for calculating pagination
+@drinks_api.route("/<id>/count", methods=['GET', 'OPTIONS'])
+def count_drinks(id):
+    if request.method == 'OPTIONS':
+        return _build_cors_preflight_response(request.origin)
     
+    res = _make_cors_response(request.origin)
 
+    c = get_db()
+    cursor = c.cursor()
+    query = Drink.count_drinks_query()
+
+    cursor.execute(query)
+    result = cursor.fetchone()
+    close_db(c)
+
+    res.set_data(result)
 
 #POST /drink/new
 #request object: drink (required)
