@@ -6,10 +6,10 @@ from models.drink import Drink
 
 drinks_api = Blueprint('drink', __name__, url_prefix = '/api/drink')
 
-#GET /drink
+#GET /drink/detail/<id>
 #queryparams: id (required)
 #gets detailed info about given drink ID
-@drinks_api.route("/<id>", methods=['GET', 'OPTIONS'])
+@drinks_api.route("/detail/<id>", methods=['GET', 'OPTIONS'])
 def drink_desc(id):
     if request.method == 'OPTIONS':
         return _build_cors_preflight_response(request.origin)
@@ -34,10 +34,10 @@ def drink_desc(id):
     json.headers = res.headers
     return json
 
-#PUT /drink/<id>/edit
+#PUT /drink/detail/<id>/edit
 #queryparams: id (requred)
 #updates drink information based on what's present.
-@drinks_api.route("/<id>/edit", methods=['PUT', 'OPTIONS'])
+@drinks_api.route("/detail/<id>/edit", methods=['PUT', 'OPTIONS'])
 def update_drink(id):
     if request.method == 'OPTIONS':
         return _build_cors_preflight_response(request.origin)
@@ -53,12 +53,40 @@ def update_drink(id):
         res.status = 400
         res.set_data('Missing ID')
         return res
+        
+#GET /drink/list
+#queryparams: limit, offset
+#gets data and metadata about various drinks. default 20 drinks, max 50 per request.
+@drinks_api.route("/list", methods=['GET', 'OPTIONS'])
+def drink_list():
+    if request.method == 'OPTIONS':
+        return _build_cors_preflight_response(request.origin)
+    
+    res = _make_cors_response(request.origin)
 
-#GET /drink/<id>/count
+    limit = int(request.args.get('limit')) if request.args.get('limit') is not None else 12
+    offset = int(request.args.get('offset')) if request.args.get('offset') is not None else 0
+    limit = 50 if limit > 50 else limit
+    
+    connection = get_db()
+    cursor = connection.cursor()
+
+    query = Drink.get_drinks_query(limit, offset)
+    print(query)
+    
+    cursor.execute(query)
+    result = cursor.fetchall()
+    close_db()
+    
+    json = jsonify(result)
+    json.headers = res.headers
+    return json
+
+#GET /drink/list/count
 #returns a number representing the total drinks in the database.
 #use for calculating pagination
-@drinks_api.route("/<id>/count", methods=['GET', 'OPTIONS'])
-def count_drinks(id):
+@drinks_api.route("/list/count", methods=['GET', 'OPTIONS'])
+def count_drinks():
     if request.method == 'OPTIONS':
         return _build_cors_preflight_response(request.origin)
     
@@ -71,8 +99,10 @@ def count_drinks(id):
     cursor.execute(query)
     result = cursor.fetchone()
     close_db(c)
-
-    res.set_data(result)
+    
+    json = jsonify({'count' : result['count(c_id)']})
+    json.headers = res.headers
+    return json
 
 #POST /drink/new
 #request object: drink (required)
@@ -163,31 +193,3 @@ def post_drink_image(id):
         res.set_data(f"saved {filename} to disk")
         return res
 
-
-#GET /drink/list
-#queryparams: limit, offset
-#gets data and metadata about various drinks. default 20 drinks, max 50 per request.
-@drinks_api.route("/list", methods=['GET', 'OPTIONS'])
-def drink_list():
-    if request.method == 'OPTIONS':
-        return _build_cors_preflight_response(request.origin)
-    
-    res = _make_cors_response(request.origin)
-
-    limit = int(request.args.get('limit')) if request.args.get('limit') is not None else 12
-    offset = int(request.args.get('offset')) if request.args.get('offset') is not None else 0
-    limit = 50 if limit > 50 else limit
-    
-    connection = get_db()
-    cursor = connection.cursor()
-
-    query = Drink.get_drinks_query(limit, offset)
-    print(query)
-    
-    cursor.execute(query)
-    result = cursor.fetchall()
-    close_db()
-    
-    json = jsonify(result)
-    json.headers = res.headers
-    return json
