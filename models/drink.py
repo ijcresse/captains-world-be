@@ -64,6 +64,10 @@ class Drink:
     @staticmethod
     def get_drinks_query(limit, offset):
         return f"SELECT c_id, c_name, c_drink_type, c_sake_type, c_date_crafted, c_image_url FROM t_drink LIMIT {limit} OFFSET {offset}"
+    
+    @staticmethod
+    def count_drinks_query():
+        return f"SELECT count(c_id) FROM t_drink"
 
     @staticmethod
     def update_drinks_query(id, update):

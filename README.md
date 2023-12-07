@@ -18,7 +18,7 @@ sudo apt-get install build-essential cargo
 #create .env file containing the following vars: 
 #directory: CW_DIR_IMAGES
 #database: CW_DB_HOST, CW_DB_USER, CW_DB_PASS, CW_DB_NAME, CW_DB_SESSION_DURATION (HH:MM:SS format)
-#flask: FLASK_SESSION_COOKIE_SECURE, FLASK_SESSION_COOKIE_HTTPONLY
+#flask: CW_COOKIE_SECURE, CW_COOKIE_HTTPONLY, CW_COOKIE_SAMESITE
 #ensure you're in the proper virtual environment
 . .venv/bin/activate
 #set secret runtime environment variable:
@@ -26,20 +26,25 @@ export SECRET_KEY=<snip>
 python3 -m flask --app . run --debug
 ```
 
-## Building for Production
+## Running Production
 ```
 #get on deploy environment
 #clone code
-#export all environment variables into the terminal
+#set up tables with models/schema.sql
+#create admin user entries
+##export all environment variables into the terminal
+#create secret key with a command like this
+python -c 'import secrets; print(secrets.token_hex())'
 #configure wsgi, add context to nginx installation
+https://flask.palletsprojects.com/en/2.3.x/deploying/uwsgi/
 https://www.digitalocean.com/community/tutorials/how-to-serve-flask-applications-with-uwsgi-and-nginx-on-ubuntu-22-04
 https://uwsgi-docs.readthedocs.io/en/latest/Nginx.html
+#the configuration should send default requests at / to the static webapp and proxy /api requests to this server.
+
+#create .sock file, give perms to nginx
+#launch the server
+uwsgi --socket 127.0.0.1:5000 --wsgi-file wsgi.py --ini captains-world-be.ini
 #verify /api/health can be hit and returns 200 OK
-```
-
-## Running in Production
-```
-
 ```
 
 ## Structure
