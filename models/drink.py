@@ -6,17 +6,17 @@ class Drink:
     def __init__(self, data):
         if self.validate(data):
             if 'id' in data:
-                self.id = data['id']
-            self.name = data['name']
-            self.drink_type = data['drink_type']
-            self.date_enjoyed = data['date_enjoyed']
-            self.date_crafted = data['date_crafted']
-            self.desc = data['desc']
+                self.id = data['c_id']
+            self.name = data['c_name']
+            self.drink_type = data['c_drink_type']
+            self.date_enjoyed = data['c_date_enjoyed']
+            # self.date_crafted = data['c_date_crafted']
+            self.description = data['c_description']
         else:
             raise Exception('Missing or malformed parameters')
 
-        if data['sake_type'] is not None or type(data['sake_type']) in SakeType:
-            self.sake_type = data['sake_type']
+        if data['c_sake_type'] is not None or type(data['c_sake_type']) in SakeType:
+            self.sake_type = data['c_sake_type']
         else:
             self.sake_type = SakeType.NONE
 
@@ -27,15 +27,15 @@ class Drink:
             return False
         # if data['id'] is None or type(data['id']) != int: #wait. we dont want to stop if we dont have an ID, necessarily
         #     errors.append('ID missing or malformed')
-        if 'name' not in data or type(data['name']) != str:
+        if 'c_name' not in data or type(data['c_name']) != str:
             errors.append('Name missing or malformed')
-        if 'drink_type' not in data or data['drink_type'].upper() not in DrinkType.__members__:
+        if 'c_drink_type' not in data or data['c_drink_type'].upper() not in DrinkType.__members__:
             errors.append('Drink type missing or malformed')
-        if 'date_crafted' not in data or not self.validate_iso_date(data['date_crafted']):
-            errors.append("DateCrafted missing or malformed")
-        if 'date_enjoyed' not in data or not self.validate_iso_date(data['date_enjoyed']):
+        # if 'date_crafted' not in data or not self.validate_iso_date(data['c_date_crafted']):
+        #     errors.append("DateCrafted missing or malformed")
+        if 'c_date_enjoyed' not in data or not self.validate_iso_date(data['c_date_enjoyed']):
             errors.append("DateEnjoyed missing or malformed")
-        if 'desc' not in data or type(data['desc']) != str:
+        if 'c_description' not in data or type(data['c_description']) != str:
             errors.append("Description missing or malformed")
         if len(errors) > 0:
             print(errors) #TODO log this properly
@@ -51,7 +51,7 @@ class Drink:
         return True
 
     def post_drink_query(self):
-        return f"INSERT INTO t_drink (c_name, c_drink_type, c_sake_type, c_date_crafted, c_date_enjoyed, c_description) VALUES ('{self.name}', '{self.drink_type}', '{self.sake_type}', '{self.date_crafted}', '{self.date_enjoyed}', '{self.desc}')"
+        return f"INSERT INTO t_drink (c_name, c_drink_type, c_sake_type, c_date_enjoyed, c_description) VALUES ('{self.name}', '{self.drink_type}', '{self.sake_type}', '{self.date_enjoyed}', '{self.description}')"
 
     @staticmethod
     def post_drink_image_query(filename, id):
@@ -59,11 +59,11 @@ class Drink:
 
     @staticmethod
     def get_drink_query(id):
-        return f"SELECT c_name, c_drink_type, c_sake_type, c_date_enjoyed, c_date_crafted, c_description, c_image_url FROM t_drink WHERE c_id={id}"
+        return f"SELECT c_name, c_drink_type, c_sake_type, c_date_enjoyed, c_description, c_image_url FROM t_drink WHERE c_id={id}"
 
     @staticmethod
     def get_drinks_query(limit, offset):
-        return f"SELECT c_id, c_name, c_drink_type, c_sake_type, c_date_crafted, c_image_url FROM t_drink LIMIT {limit} OFFSET {offset}"
+        return f"SELECT c_id, c_name, c_drink_type, c_sake_type, c_image_url FROM t_drink LIMIT {limit} OFFSET {offset}"
     
     @staticmethod
     def count_drinks_query():
@@ -73,12 +73,11 @@ class Drink:
     def update_drinks_query(id, update):
         return f"""
             UPDATE t_drink 
-            SET c_name = {update.name}, 
-                c_drink_type = {update.drink_type},
-                c_sake_type = {update.sake_type}, 
-                c_date_crafted = {update.date_crafted}, 
-                c_date_enjoyed = {update.date_enjoyed}, 
-                c_description = {update.desc} 
+            SET c_name = "{update.name}", 
+                c_drink_type = "{update.drink_type}",
+                c_sake_type = "{update.sake_type}", 
+                c_date_enjoyed = "{update.date_enjoyed}", 
+                c_description = "{update.description}" 
             WHERE c_id={id}
             """
     
