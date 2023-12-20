@@ -174,7 +174,7 @@ def post_drink():
         return res
     
 #post image. follow up API to the POST drink metadata endpoint, requires ID returned from that
-@drinks_api.route("/new/<id>/img", methods=['POST', 'OPTIONS'])
+@drinks_api.route("/img/<id>", methods=['POST', 'OPTIONS'])
 def post_drink_image(id):
     if request.method == 'OPTIONS':
         return _build_cors_preflight_response(request.origin)
