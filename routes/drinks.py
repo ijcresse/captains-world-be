@@ -53,6 +53,24 @@ def update_drink(id):
         res.status = 400
         res.set_data('Missing ID')
         return res
+    
+    data = request.get_json()
+    try:
+        drink = Drink(data)
+    except:
+        res.status = 400
+        res.set_data('One or more parameters is malformed or missing.')
+        return res
+    
+    c = get_db()
+    cursor = c.cursor()
+    query = drink.update_drinks_query(id, drink)
+    cursor.execute(query)
+    c.commit()
+    close_db(c)
+
+    res.status = 200
+    return res
         
 #GET /drink/list
 #queryparams: limit, offset
@@ -147,7 +165,7 @@ def post_drink():
     close_db(c)
     
     if row['c_name'] == drink.name:
-        json = jsonify({'id' : row['c_id']})
+        json = jsonify({'c_id' : row['c_id']})
         json.headers = res.headers
         return json
     else:
@@ -156,7 +174,7 @@ def post_drink():
         return res
     
 #post image. follow up API to the POST drink metadata endpoint, requires ID returned from that
-@drinks_api.route("/new/<id>/img", methods=['POST', 'OPTIONS'])
+@drinks_api.route("/img/<id>", methods=['POST', 'OPTIONS'])
 def post_drink_image(id):
     if request.method == 'OPTIONS':
         return _build_cors_preflight_response(request.origin)
@@ -192,4 +210,3 @@ def post_drink_image(id):
         #what if this fails, or get a bad id?
         res.set_data(f"saved {filename} to disk")
         return res
-
