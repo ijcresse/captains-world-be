@@ -21,13 +21,9 @@ def get_tags_for_review(review_id):
     result = cursor.fetchall()
     close_db()
 
-    res.status = 200
-    res.set_data(result)
-    return res
-
-#GET /tags/list/reviews/<tag id>
-#queryparams: tag id (required)
-#gets list of review IDs associated with a given tag
+    json = jsonify(result)
+    json.headers = res.headers
+    return json
 
 #POST /tags/for/review/<review id>
 #queryparams: review id (required)
