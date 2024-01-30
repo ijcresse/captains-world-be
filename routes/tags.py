@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from .route_util import is_authorized, unauthorized_response, _build_cors_preflight_response, _make_cors_response, get_db, close_db
+from .route_util import is_authorized, unauthorized_response, _build_cors_preflight_response, _make_cors_response, _make_json_response, get_db, close_db
 from models.tag import Tag
 
 tags_api = Blueprint('tags', __name__, url_prefix = '/api/tags')
@@ -22,8 +22,7 @@ def get_tags_for_review(review_id):
     close_db()
 
     json = jsonify(result)
-    json.headers = res.headers
-    return json
+    return _make_json_response(json, res)
 
 #POST /tags/for/review/<review id>
 #queryparams: review id (required)

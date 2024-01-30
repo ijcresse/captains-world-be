@@ -99,3 +99,8 @@ def _make_cors_response(origin):
     res.headers.add('Access-Control-Allow-Origin', origin)
     res.headers.add('Access-Control-Allow-Credentials', 'true')
     return res
+
+def _make_json_response(json, res):
+    json.headers = res.headers
+    json.headers.set('Content-Type', 'application/json')
+    return json
