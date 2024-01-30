@@ -45,7 +45,7 @@ def update_drink(id):
     res = _make_cors_response(request.origin)
 
     if not is_authorized():
-        return unauthorized_response
+        return unauthorized_response(res)
 
     if id is None:
         res.status = 400
@@ -131,7 +131,7 @@ def post_drink():
     res = _make_cors_response(request.origin)
 
     if not is_authorized():
-        return unauthorized_response
+        return unauthorized_response(res)
 
     #process drink object from request
     if request.is_json is False:
@@ -178,7 +178,7 @@ def post_drink_image(id):
     res = _make_cors_response(request.origin)
 
     if not is_authorized():
-        return unauthorized_response
+        return unauthorized_response(res)
 
     if 'file' not in request.files or request.files['file'].filename == '':
         res.status = 400

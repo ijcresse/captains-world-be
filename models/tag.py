@@ -19,7 +19,23 @@ class Tag:
     @staticmethod
     def post_tag_query(tag_name):
         return f"INSERT INTO t_tag (c_tag_name) VALUES ('{tag_name}')"
+
+    @staticmethod
+    def delete_tag_query(tag_id):
+        return f"DELETE FROM t_tag WHERE c_id={tag_id}"
+
+    @staticmethod
+    def check_last_tag_query(tag_id):
+        return f"SELECT COUNT(*) FROM t_drink_tag WHERE fk_tag_id={tag_id}"
+
+    @staticmethod
+    def post_drink_tag_query(tag_id, review_id):
+        return f"INSERT INTO t_drink_tag (fk_tag_id, fk_drink_id) VALUES ({tag_id}, {review_id})"
     
+    @staticmethod
+    def delete_drink_tag_query(tag_id, review_id):
+        return f"DELETE FROM t_drink_tag WHERE fk_drink_id={review_id} AND fk_tag_id={tag_id}"
+
     @staticmethod
     def get_tags_from_review_query(review_id):
         return f"""
@@ -27,8 +43,8 @@ class Tag:
             FROM t_drink d, t_drink_tag dt, t_tag t 
             WHERE d.c_id = {review_id} 
             AND t.c_id = dt.fk_tag_id
-            NAD d.c_id = dt.fk_drink_id 
-            GROUP BY d.c_id
+            AND d.c_id = dt.fk_drink_id 
+            GROUP BY t.c_id
             """
     
     @staticmethod
@@ -39,7 +55,7 @@ class Tag:
             WHERE t.c_id = {tag_id} 
             AND t.c_id = dt.fk_tag_id 
             AND d.c_id = dt.fk_drink_id
-            GROUP BY t.c_id
+            GROUP BY d.c_id
             """
 
     #find intersection set of reviews from given tag list
@@ -56,6 +72,3 @@ class Tag:
             GROUP BY d.c_id
             HAVING COUNT( d.c_id )={num_tags}
             """
-
-    # @staticmethod
-    # def add_drink_tag_query(review_id, tag_id):

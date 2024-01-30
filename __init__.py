@@ -6,6 +6,7 @@ from flask import Flask
 from routes.health import health_api
 from routes.drinks import drinks_api
 from routes.users import users_api
+from routes.tags import tags_api
 from config import get_env_vars
 
 def create_app():
@@ -33,6 +34,7 @@ def create_app():
     app.register_blueprint(health_api)
     app.register_blueprint(drinks_api)
     app.register_blueprint(users_api)
+    app.register_blueprint(tags_api)
 
     return app
 

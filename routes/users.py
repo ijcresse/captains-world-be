@@ -99,4 +99,4 @@ def verify_session():
     if is_authorized():
         return res
     else:
-        return unauthorized_response
+        return unauthorized_response(res)
