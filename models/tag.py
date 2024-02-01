@@ -8,6 +8,10 @@ class Tag:
         return f"SELECT c_id, c_tag_name FROM t_tag WHERE c_tag_name='{tag_name}'"
 
     @staticmethod
+    def get_tags_query():
+        return "SELECT c_id, c_tag_name FROM t_tag LIMIT 100"
+    
+    @staticmethod
     def post_tag_query(tag_name):
         return f"INSERT INTO t_tag (c_tag_name) VALUES ('{tag_name}')"
 
