@@ -73,9 +73,9 @@ def post_tags_for_review(review_id):
 
     (add_tags, delete_tags) = find_delta(review_id, tags, cursor)
     if len(add_tags) > 0:
-        commit_tags_to_db(add_tags, review_id, connection, cursor)
+        commit_tags_to_db(add_tags, review_id, connection)
     if len(delete_tags) > 0:
-        remove_tags_from_db(delete_tags, review_id, connection, cursor)
+        remove_tags_from_db(delete_tags, review_id, connection)
 
     close_db()
     
@@ -91,7 +91,7 @@ def find_delta(review_id, new_tags, cursor):
 
     i = 0
     j = 0
-    while (i < len(db_tags)):
+    while (i < len(db_tags) and 0 < len(new_tags)):
         if (db_tags[i]['c_tag_name'] == new_tags[j]):
             db_tags.pop(i)
             new_tags.pop(j)
