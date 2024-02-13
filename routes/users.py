@@ -1,7 +1,7 @@
 import secrets
 
 from flask import Blueprint, request, session, current_app
-from .route_util import is_authorized, delete_session, _build_cors_preflight_response, _make_cors_response
+from .route_util import is_authorized, unauthorized_response, delete_session, _build_cors_preflight_response, _make_cors_response
 from services.db import get_db, close_db
 from models.user import User
 
@@ -99,5 +99,4 @@ def verify_session():
     if is_authorized():
         return res
     else:
-        res.status = 401
-        return res
+        return unauthorized_response(res)

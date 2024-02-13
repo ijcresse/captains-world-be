@@ -51,6 +51,12 @@ def is_authorized():
                 delete_session(session_name, c)
                 return False
 
+#returns 401 for unauthorized users hitting an auth endpoint
+def unauthorized_response(res):
+    res.status = 401
+    res.set_data("Secured endpoint")
+    return res
+
 def session_is_active(login_time):
     login_duration_env = current_app.config['DB']['session_timeout']
     login_duration = datetime.strptime(login_duration_env, '%H:%M:%S')
@@ -93,3 +99,8 @@ def _make_cors_response(origin):
     res.headers.add('Access-Control-Allow-Origin', origin)
     res.headers.add('Access-Control-Allow-Credentials', 'true')
     return res
+
+def _make_json_response(json, res):
+    json.headers = res.headers
+    json.headers.set('Content-Type', 'application/json')
+    return json

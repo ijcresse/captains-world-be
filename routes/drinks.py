@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
 
-from .route_util import save_image, is_authorized, _build_cors_preflight_response, _make_cors_response
+from .route_util import save_image, is_authorized, unauthorized_response, _build_cors_preflight_response, _make_cors_response
 from services.db import get_db, close_db
 from models.drink import Drink
 
@@ -45,9 +45,7 @@ def update_drink(id):
     res = _make_cors_response(request.origin)
 
     if not is_authorized():
-        res.status = 401
-        res.set_data('Secured endpoint')
-        return res
+        return unauthorized_response(res)
 
     if id is None:
         res.status = 400
@@ -133,9 +131,7 @@ def post_drink():
     res = _make_cors_response(request.origin)
 
     if not is_authorized():
-        res.status = 401
-        res.set_data('Secured endpoint')
-        return res
+        return unauthorized_response(res)
 
     #process drink object from request
     if request.is_json is False:
@@ -182,9 +178,7 @@ def post_drink_image(id):
     res = _make_cors_response(request.origin)
 
     if not is_authorized():
-        res.status = 401
-        res.set_data("Secured endpoint")
-        return res
+        return unauthorized_response(res)
 
     if 'file' not in request.files or request.files['file'].filename == '':
         res.status = 400
