@@ -7,6 +7,7 @@ from werkzeug.utils import secure_filename
 from models.user import User
 from services.db import get_db, close_db
 
+#delete this method, not useful
 def create_response(status, desc = "", data = []):
     return jsonify({ 'desc' : desc, 'data': data }), status
 

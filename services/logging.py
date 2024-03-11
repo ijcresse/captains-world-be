@@ -1,7 +1,7 @@
 from logging.config import dictConfig
 
 dictConfig({
-    'version': 0.1.0,
+    'version': 1,
     'formatters': {'default': {
         'format': '[%(asctime)s] %(levelname)s in %(module)s: %(message)s',
     }},

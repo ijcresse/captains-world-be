@@ -10,11 +10,8 @@ def app():
     os.environ['CW_DB_PASS'] = 'test_pass'
     os.environ['CW_DB_NAME'] = 'test_database'
     os.environ['CW_DB_SESSION_DURATION'] = '12:00:00'
-
     os.environ['CW_DIR_IMAGES'] = '/test/dir/for/images'
-
     os.environ['SECRET_KEY'] = 'test_secret_key'
-
     os.environ['CW_COOKIE_HTTPONLY'] = 'True'
     os.environ['CW_COOKIE_SECURE'] = 'False'
     os.environ['CW_COOKIE_SAMESITE'] = 'None'
