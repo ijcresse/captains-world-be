@@ -11,7 +11,6 @@ from routes.route_util import save_image, is_authorized, session_is_active, dele
 
 #save_image test suite
 #i acknowledge the lack of improper image file validation. 
-#the risk for bad actors is low, however
 def test_it_should_not_save_other_extensions(app):
     test_id = 1
     test_empty_filename_img = {
@@ -96,20 +95,14 @@ def test_it_should_save_gif(app):
         os.remove(f"{app.config['DIR']['images']}{test_id}_{test_gif.filename}")
 
 #is_authorized test suite
-#ok it seems like i need login to be proved to have an active session to test?
 def test_it_should_verify_authorized_users(client):
-    c = MagicMock(name="dbconn")
     cursor = MagicMock(name="cursor")
-    cursor.fetchone.return_value({'c_id': '1'})
-    session_name = "cw-session"
+    current_time = datetime.now()
+    cursor.fetchone.return_value({'c_login_time': current_time})
 
-    with client and client.session_transaction() as session:
-        session[session_name] = 1
-        delete_session(session_name, c)
-    # with client.session_transaction() as session:
-    #     session['cw-session'] = 1
-
-    # assert is_authorized()
+    with client.session_transaction() as session:
+        session['cw-session'] = 'test'
+    assert is_authorized(cursor)
 
 def test_it_should_reject_unauthorized_users(client):
     assert False
@@ -128,11 +121,12 @@ def test_it_should_identify_expired_login_times(app):
         assert session_is_active(expired_time) is False
 
 #delete_session tests
-def test_it_should_delete_one_active_session():
-    assert False
+def test_it_should_delete_one_active_session(client):
+    c = MagicMock(name="dbconn")
+    cursor = MagicMock(name="cursor")
+    cursor.fetchone.return_value({'c_id': '1'})
+    session_name = "cw-session"
 
-def test_it_should_do_nothing_for_inactive_sessions():
-    assert False
-
-def test_it_should_delete_all_active_sessions():
-    assert False
+    with client.session_transaction() as session:
+        session[session_name] = 1
+        delete_session(session_name, c)

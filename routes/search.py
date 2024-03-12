@@ -39,7 +39,7 @@ def search_on_tags(tags, name, type):
     cursor.execute(query)
     reviews = cursor.fetchall()
     close_db()
-    
+
     if type is not None:
         i = 0
         while i < len(reviews):
@@ -57,7 +57,6 @@ def search_on_tags(tags, name, type):
                 reviews.pop(i)
     
     return reviews
-
 
 def search_on_params(name, type):
     connection = get_db()

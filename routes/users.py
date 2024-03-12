@@ -66,6 +66,7 @@ def login():
         res.set_data('Failed to validate credentials')
         return res
 
+#TODO: verify that FE is expiring cw-session cookie when this is called
 @users_api.route("/logout", methods=['GET', 'OPTIONS'])
 def logout():
     if request.method == 'OPTIONS':
@@ -81,6 +82,7 @@ def logout():
 
     c = get_db()
     delete_session(session_name, c)
+    close_db()
     return res
     
 @users_api.route("/session", methods=['GET', 'OPTIONS'])
