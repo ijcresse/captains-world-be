@@ -58,7 +58,7 @@ def login():
                         max_age=one_day,
                         path='/',
                         secure=current_app.config['SESSION_COOKIE_SECURE'],
-                        samesite=current_app.config['SESSION_COOKIE_SAMESITE']) # this should pull from current_app.config
+                        samesite=current_app.config['SESSION_COOKIE_SAMESITE'])
         return res
     else:
         close_db()
