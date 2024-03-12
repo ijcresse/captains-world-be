@@ -77,7 +77,7 @@ def post_tags_for_review(review_id):
     if len(delete_tags) > 0:
         remove_tags_from_db(delete_tags, review_id, c)
 
-    close_db(c)
+    close_db()
     
     res.status = 200
     return res

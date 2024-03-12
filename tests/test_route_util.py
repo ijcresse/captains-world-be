@@ -1,6 +1,8 @@
 import pytest
 import io
 import os
+import unittest
+from unittest.mock import MagicMock
 from datetime import datetime
 from flask import session
 from werkzeug.datastructures import FileStorage
@@ -96,15 +98,18 @@ def test_it_should_save_gif(app):
 #is_authorized test suite
 #ok it seems like i need login to be proved to have an active session to test?
 def test_it_should_verify_authorized_users(client):
+    c = MagicMock(name="dbconn")
+    cursor = MagicMock(name="cursor")
+    cursor.fetchone.return_value({'c_id': '1'})
+    session_name = "cw-session"
+
     with client and client.session_transaction() as session:
-        client.post('/api/user/login', data={'username': 'flask'})
-        session_test = session
-        print('foo')
+        session[session_name] = 1
+        delete_session(session_name, c)
     # with client.session_transaction() as session:
     #     session['cw-session'] = 1
 
     # assert is_authorized()
-
 
 def test_it_should_reject_unauthorized_users(client):
     assert False

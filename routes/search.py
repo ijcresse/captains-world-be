@@ -38,7 +38,8 @@ def search_on_tags(tags, name, type):
 
     cursor.execute(query)
     reviews = cursor.fetchall()
-
+    close_db()
+    
     if type is not None:
         i = 0
         while i < len(reviews):
@@ -55,8 +56,6 @@ def search_on_tags(tags, name, type):
             else:
                 reviews.pop(i)
     
-    close_db(connection)
-
     return reviews
 
 
@@ -67,8 +66,7 @@ def search_on_params(name, type):
     query = SearchQuery.get_reviews_from_params_query(name, type)
     cursor.execute(query)
     reviews = cursor.fetchall()
-
-    close_db(connection)
+    close_db()
     
     return reviews
 

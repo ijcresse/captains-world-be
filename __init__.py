@@ -2,6 +2,7 @@ from datetime import datetime
 
 from flask import Flask
 
+from services import db
 from routes.health import health_api
 from routes.drinks import drinks_api
 from routes.users import users_api
@@ -37,5 +38,7 @@ def create_app():
     app.register_blueprint(users_api)
     app.register_blueprint(tags_api)
     app.register_blueprint(search_api)
+
+    db.init_app(app)
 
     return app

@@ -27,7 +27,7 @@ def drink_desc(id):
     
     cursor.execute(query)
     result = cursor.fetchone()
-    close_db(c)
+    close_db()
 
     #check for errors, adjust response as necessary
     json = jsonify(result)
@@ -66,7 +66,7 @@ def update_drink(id):
     query = drink.update_drinks_query(id, drink)
     cursor.execute(query)
     c.commit()
-    close_db(c)
+    close_db()
 
     res.status = 200
     return res
@@ -115,7 +115,7 @@ def count_drinks():
 
     cursor.execute(query)
     result = cursor.fetchone()
-    close_db(c)
+    close_db()
     
     json = jsonify({'count' : result['count(c_id)']})
     json.headers = res.headers
@@ -160,7 +160,7 @@ def post_drink():
     get_id = "SELECT c_id, c_name FROM t_drink ORDER BY c_id DESC LIMIT 1"
     cursor.execute(get_id)
     row = cursor.fetchone()
-    close_db(c)
+    close_db()
     
     if row['c_name'] == drink.name:
         json = jsonify({'c_id' : row['c_id']})
@@ -194,8 +194,7 @@ def post_drink_image(id):
 
     filename = save_image(id, img)
     if filename is None or filename == '':
-        close_db(c)
-        
+        close_db()
         res.status = 500
         res.set_data("Unable to save image to disk")
         return res
@@ -204,7 +203,7 @@ def post_drink_image(id):
         print(query)
         cursor.execute(query)
         c.commit()
-        close_db(c)
+        close_db()
 
         #what if this fails, or get a bad id?
         res.set_data(f"saved {filename} to disk")

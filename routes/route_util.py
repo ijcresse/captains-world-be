@@ -42,7 +42,7 @@ def is_authorized(cursor):
     if 'cw-session' in session:
         session_name = session['cw-session']
         
-        query = User.fetch_session(session_name)
+        query = User.fetch_session_query(session_name)
         cursor.execute(query)
         result = cursor.fetchone()
 
@@ -60,23 +60,28 @@ def session_is_active(login_time):
 #deletes an active session. assumed to be last operation, closes connection
 def delete_session(session_name, c):
     cursor = c.cursor()
-    query = User.fetch_session(session_name)
+    query = User.fetch_session_query(session_name)
     cursor.execute(query)
     result = cursor.fetchone()
 
     #no session found, no operation
     if result is None:
-        close_db(c)
         return False
     else:
-        query = User.delete_session(result['c_id'])
+        query = User.delete_session_query(result['c_id'])
         cursor.execute(query)
         c.commit()
-        close_db(c)
-
+        close_db()
+        
         session.pop('cw-session', None)
 
         return True
+    
+    if result:
+        query = User.delete_session_query(result['c_id'])
+        cursor.execute(query)
+
+        session.pop('cw-session', None)
 
 #returns 401 for unauthorized users hitting an auth endpoint
 def unauthorized_response(res):

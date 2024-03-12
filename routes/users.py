@@ -39,7 +39,7 @@ def login():
 
         token = secrets.token_urlsafe(32)
         session_name = "captains.world." + token
-        query = user.create_session(session_name)
+        query = user.create_session_query(session_name)
         try:    
             cursor.execute(query)
             c.commit()
@@ -50,7 +50,7 @@ def login():
             res.set_data('Failed to create a valid session')
             return res
         finally:
-            close_db(c)
+            close_db()
         
         session['cw-session'] = session_name
         one_day = 60 * 60 * 24
@@ -61,7 +61,7 @@ def login():
                         samesite=current_app.config['SESSION_COOKIE_SAMESITE']) # this should pull from current_app.config
         return res
     else:
-        close_db(c)
+        close_db()
         res.status = 401
         res.set_data('Failed to validate credentials')
         return res
@@ -80,14 +80,8 @@ def logout():
         return res
 
     c = get_db()
-    successful_deletion = delete_session(session_name, c)
-
-    if successful_deletion:
-        return res
-    else:
-        #user is effectively logged out anyway. no content = no action
-        res.status = 204
-        return res
+    delete_session(session_name, c)
+    return res
     
 @users_api.route("/session", methods=['GET', 'OPTIONS'])
 def verify_session():
@@ -101,5 +95,5 @@ def verify_session():
     if is_authorized(cursor) is False:
         res = unauthorized_response(res)
         
-    close_db(c)
+    close_db()
     return res
