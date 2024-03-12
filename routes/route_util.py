@@ -7,29 +7,34 @@ from werkzeug.utils import secure_filename
 from models.user import User
 from services.db import get_db, close_db
 
-#delete this method, not useful
-def create_response(status, desc = "", data = []):
-    return jsonify({ 'desc' : desc, 'data': data }), status
+BEFORE_EXTENSION = 0
+AFTER_EXTENSION = 1
 
-def allowed_extensions(filename, extensions):
-    return '.' in filename and filename.rsplit('.', 1)[1].lower() in extensions
-
+#saves an image to disk
 def save_image(id, img):
     image_dir = current_app.config['DIR']['images']
     extensions = current_app.config['DIR']['extensions']
 
-    if img and allowed_extensions(img.filename, extensions):
+    try:
+        if allowed_extensions(img.filename, extensions) is False:
+            raise Exception("Invalid filename or filetype.")
         filename = secure_filename(f"{id}_{img.filename}")
-        
-        try:
-            img.save(os.path.join(image_dir, filename))
-        except Exception as error:
-            filename = ''
-            print(f"WARN: unable to successfully save {filename} to disk.")
-            print(jsonify(error))
+        img.save(os.path.join(image_dir, filename))
         return filename
-    else:
-        return ''
+    except Exception as error:
+        print(f"WARN: unable to successfully save {filename} to disk.")
+        print(jsonify(error))
+
+def allowed_extensions(filename, extensions):
+    allowed = '.' in filename
+    if allowed is False:
+        return False
+    
+    extension_split = filename.rsplit('.', 1)
+    if len(extension_split[BEFORE_EXTENSION]) == 0:
+        return False
+    
+    return extension_split[AFTER_EXTENSION].lower() in extensions
 
 #checks if the current session is authorized. deletes if the session is expired.
 def is_authorized():
@@ -51,12 +56,6 @@ def is_authorized():
             else:
                 delete_session(session_name, c)
                 return False
-
-#returns 401 for unauthorized users hitting an auth endpoint
-def unauthorized_response(res):
-    res.status = 401
-    res.set_data("Secured endpoint")
-    return res
 
 def session_is_active(login_time):
     login_duration_env = current_app.config['DB']['session_timeout']
@@ -86,7 +85,13 @@ def delete_session(session_name, c):
 
         return True
 
-def _build_cors_preflight_response(origin):
+#returns 401 for unauthorized users hitting an auth endpoint
+def unauthorized_response(res):
+    res.status = 401
+    res.set_data("Secured endpoint")
+    return res
+
+def build_cors_preflight_response(origin):
     res = make_response()
     res.headers.add('Access-Control-Allow-Origin', origin)
     res.headers.add('Access-Control-Allow-Credentials', 'true')
@@ -95,13 +100,13 @@ def _build_cors_preflight_response(origin):
     res.headers.add('Access-Control-Expose-Headers', 'Access-Control-Allow-Origin, Access-Control-Allow-Credentials, content-type, content-length')
     return res
 
-def _make_cors_response(origin):
+def make_cors_response(origin):
     res = make_response()
     res.headers.add('Access-Control-Allow-Origin', origin)
     res.headers.add('Access-Control-Allow-Credentials', 'true')
     return res
 
-def _make_json_response(json, res):
+def make_json_response(json, res):
     json.headers = res.headers
     json.headers.set('Content-Type', 'application/json')
     return json

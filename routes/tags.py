@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from .route_util import is_authorized, unauthorized_response, _build_cors_preflight_response, _make_cors_response, _make_json_response, get_db, close_db
+from .route_util import is_authorized, unauthorized_response, build_cors_preflight_response, make_cors_response, make_json_response, get_db, close_db
 from models.tag import Tag
 
 tags_api = Blueprint('tags', __name__, url_prefix = '/api/tags')
@@ -9,9 +9,9 @@ tags_api = Blueprint('tags', __name__, url_prefix = '/api/tags')
 @tags_api.route("/list", methods=['GET', 'OPTIONS'])
 def get_tags_list():
     if request.method == 'OPTIONS':
-        return _build_cors_preflight_response(request.origin)
+        return build_cors_preflight_response(request.origin)
     
-    res = _make_cors_response(request.origin)
+    res = make_cors_response(request.origin)
 
     connection = get_db()
     cursor = connection.cursor()
@@ -21,7 +21,7 @@ def get_tags_list():
     close_db()
 
     json = jsonify(result)
-    return _make_json_response(json, res)
+    return make_json_response(json, res)
 
 #GET /tags/for/review/<review id>
 #queryparams: review id (required)
@@ -29,9 +29,9 @@ def get_tags_list():
 @tags_api.route("/for/review/<review_id>", methods=['GET', 'OPTIONS'])
 def get_tags_for_review(review_id):
     if request.method == 'OPTIONS':
-        return _build_cors_preflight_response(request.origin)
+        return build_cors_preflight_response(request.origin)
     
-    res = _make_cors_response(request.origin)
+    res = make_cors_response(request.origin)
 
     connection = get_db()
     cursor = connection.cursor()
@@ -41,7 +41,7 @@ def get_tags_for_review(review_id):
     close_db()
 
     json = jsonify(result)
-    return _make_json_response(json, res)
+    return make_json_response(json, res)
 
 #POST /tags/for/review/<review id>
 #queryparams: review id (required)
@@ -50,9 +50,9 @@ def get_tags_for_review(review_id):
 @tags_api.route("/for/review/<review_id>", methods=['POST', 'OPTIONS'])
 def post_tags_for_review(review_id):
     if request.method == 'OPTIONS':
-        return _build_cors_preflight_response(request.origin)
+        return build_cors_preflight_response(request.origin)
     
-    res = _make_cors_response(request.origin)
+    res = make_cors_response(request.origin)
 
     if not is_authorized():
         return unauthorized_response(res)

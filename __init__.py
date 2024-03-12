@@ -26,6 +26,7 @@ def create_app():
     print(f"Starting Captain's World Backend Server at {datetime.now()}")
     print(f"Debug Mode: {app.config['DEBUG']}")
     print(f"Image dir set to: {app.config['DIR']['images']}")
+    print(f"Image extensions allowed set to: {app.config['DIR']['extensions']}")
     print(f"Session Cookie HTTP Only: {app.config['SESSION_COOKIE_HTTPONLY']}")
     print(f"Session Cookie Secure: {app.config['SESSION_COOKIE_SECURE']}")
     print(f"Session Cookie Same Site: {app.config['SESSION_COOKIE_SAMESITE']}")

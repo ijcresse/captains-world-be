@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
 
-from .route_util import save_image, is_authorized, unauthorized_response, _build_cors_preflight_response, _make_cors_response
+from .route_util import save_image, is_authorized, unauthorized_response, build_cors_preflight_response, make_cors_response
 from services.db import get_db, close_db
 from models.drink import Drink
 
@@ -12,9 +12,9 @@ drinks_api = Blueprint('drink', __name__, url_prefix = '/api/drink')
 @drinks_api.route("/detail/<id>", methods=['GET', 'OPTIONS'])
 def drink_desc(id):
     if request.method == 'OPTIONS':
-        return _build_cors_preflight_response(request.origin)
+        return build_cors_preflight_response(request.origin)
     
-    res = _make_cors_response(request.origin)
+    res = make_cors_response(request.origin)
 
     if id is None:
         res.status = 400
@@ -40,9 +40,9 @@ def drink_desc(id):
 @drinks_api.route("/detail/<id>/edit", methods=['PUT', 'OPTIONS'])
 def update_drink(id):
     if request.method == 'OPTIONS':
-        return _build_cors_preflight_response(request.origin)
+        return build_cors_preflight_response(request.origin)
     
-    res = _make_cors_response(request.origin)
+    res = make_cors_response(request.origin)
 
     if not is_authorized():
         return unauthorized_response(res)
@@ -76,9 +76,9 @@ def update_drink(id):
 @drinks_api.route("/list", methods=['GET', 'OPTIONS'])
 def drink_list():
     if request.method == 'OPTIONS':
-        return _build_cors_preflight_response(request.origin)
+        return build_cors_preflight_response(request.origin)
     
-    res = _make_cors_response(request.origin)
+    res = make_cors_response(request.origin)
 
     limit = int(request.args.get('limit')) if request.args.get('limit') is not None else 12
     offset = int(request.args.get('offset')) if request.args.get('offset') is not None else 0
@@ -104,9 +104,9 @@ def drink_list():
 @drinks_api.route("/list/count", methods=['GET', 'OPTIONS'])
 def count_drinks():
     if request.method == 'OPTIONS':
-        return _build_cors_preflight_response(request.origin)
+        return build_cors_preflight_response(request.origin)
     
-    res = _make_cors_response(request.origin)
+    res = make_cors_response(request.origin)
 
     c = get_db()
     cursor = c.cursor()
@@ -126,9 +126,9 @@ def count_drinks():
 @drinks_api.route("/new", methods=['POST', 'OPTIONS'])
 def post_drink():
     if request.method == 'OPTIONS':
-        return _build_cors_preflight_response(request.origin)
+        return build_cors_preflight_response(request.origin)
     
-    res = _make_cors_response(request.origin)
+    res = make_cors_response(request.origin)
 
     if not is_authorized():
         return unauthorized_response(res)
@@ -173,9 +173,9 @@ def post_drink():
 @drinks_api.route("/img/<id>", methods=['POST', 'OPTIONS'])
 def post_drink_image(id):
     if request.method == 'OPTIONS':
-        return _build_cors_preflight_response(request.origin)
+        return build_cors_preflight_response(request.origin)
     
-    res = _make_cors_response(request.origin)
+    res = make_cors_response(request.origin)
 
     if not is_authorized():
         return unauthorized_response(res)

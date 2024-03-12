@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from .route_util import _make_json_response, _build_cors_preflight_response, _make_cors_response, get_db, close_db
+from .route_util import make_json_response, build_cors_preflight_response, make_cors_response, get_db, close_db
 from models.search_query import SearchQuery
 from models.tag import Tag
 
@@ -8,9 +8,9 @@ search_api = Blueprint('search', __name__, url_prefix = '/api/search')
 @search_api.route("", methods=['GET', 'OPTIONS'])
 def search():
     if request.method == 'OPTIONS':
-        return _build_cors_preflight_response(request.origin)
+        return build_cors_preflight_response(request.origin)
     
-    res = _make_cors_response(request.origin)
+    res = make_cors_response(request.origin)
 
     name = request.args.get('c_name')
     type = request.args.get('c_sake_type')
@@ -27,7 +27,7 @@ def search():
         return res
 
     json = jsonify(review_ids)
-    return _make_json_response(json, res)
+    return make_json_response(json, res)
 
 def search_on_tags(tags, name, type):
     connection = get_db()

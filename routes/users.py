@@ -1,7 +1,7 @@
 import secrets
 
 from flask import Blueprint, request, session, current_app
-from .route_util import is_authorized, unauthorized_response, delete_session, _build_cors_preflight_response, _make_cors_response
+from .route_util import is_authorized, unauthorized_response, delete_session, build_cors_preflight_response, make_cors_response
 from services.db import get_db, close_db
 from models.user import User
 
@@ -12,9 +12,9 @@ users_api = Blueprint('user', __name__, url_prefix = '/api/user')
 @users_api.route("/login", methods=['POST', 'OPTIONS'])
 def login():
     if request.method == 'OPTIONS':
-        return _build_cors_preflight_response(request.origin)
+        return build_cors_preflight_response(request.origin)
 
-    res = _make_cors_response(request.origin)
+    res = make_cors_response(request.origin)
 
     if request.is_json is False:
         res.status = 400
@@ -69,9 +69,9 @@ def login():
 @users_api.route("/logout", methods=['GET', 'OPTIONS'])
 def logout():
     if request.method == 'OPTIONS':
-        return _build_cors_preflight_response(request.origin)
+        return build_cors_preflight_response(request.origin)
     
-    res = _make_cors_response(request.origin)
+    res = make_cors_response(request.origin)
 
     session_name = session.pop('cw-session', None)
 
@@ -92,9 +92,9 @@ def logout():
 @users_api.route("/session", methods=['GET', 'OPTIONS'])
 def verify_session():
     if request.method == 'OPTIONS':
-        return _build_cors_preflight_response(request.origin)
+        return build_cors_preflight_response(request.origin)
     
-    res = _make_cors_response(request.origin)
+    res = make_cors_response(request.origin)
 
     if is_authorized():
         return res
