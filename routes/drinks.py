@@ -44,7 +44,10 @@ def update_drink(id):
     
     res = make_cors_response(request.origin)
 
-    if not is_authorized():
+    c = get_db()
+    cursor = c.cursor()
+
+    if not is_authorized(cursor):
         return unauthorized_response(res)
 
     if id is None:
@@ -60,8 +63,6 @@ def update_drink(id):
         res.set_data('One or more parameters is malformed or missing.')
         return res
     
-    c = get_db()
-    cursor = c.cursor()
     query = drink.update_drinks_query(id, drink)
     cursor.execute(query)
     c.commit()
@@ -130,7 +131,10 @@ def post_drink():
     
     res = make_cors_response(request.origin)
 
-    if not is_authorized():
+    c = get_db()
+    cursor = c.cursor()
+
+    if not is_authorized(cursor):
         return unauthorized_response(res)
 
     #process drink object from request
@@ -147,8 +151,6 @@ def post_drink():
         res.set_data('One or more parameters is malformed or missing.')
         return res
 
-    c = get_db()
-    cursor = c.cursor()
     query = drink.post_drink_query()
     cursor.execute(query)
     c.commit()
@@ -177,7 +179,10 @@ def post_drink_image(id):
     
     res = make_cors_response(request.origin)
 
-    if not is_authorized():
+    c = get_db()
+    cursor = c.cursor()
+
+    if not is_authorized(cursor):
         return unauthorized_response(res)
 
     if 'file' not in request.files or request.files['file'].filename == '':
@@ -189,12 +194,12 @@ def post_drink_image(id):
 
     filename = save_image(id, img)
     if filename is None or filename == '':
+        close_db(c)
+        
         res.status = 500
         res.set_data("Unable to save image to disk")
         return res
     else:
-        c = get_db()
-        cursor = c.cursor()
         query = Drink.post_drink_image_query(filename, id)
         print(query)
         cursor.execute(query)

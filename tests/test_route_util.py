@@ -1,10 +1,15 @@
 import pytest
 import io
 import os
+from datetime import datetime
+from flask import session
 from werkzeug.datastructures import FileStorage
+
 from routes.route_util import save_image, is_authorized, session_is_active, delete_session
 
 #save_image test suite
+#i acknowledge the lack of improper image file validation. 
+#the risk for bad actors is low, however
 def test_it_should_not_save_other_extensions(app):
     test_id = 1
     test_empty_filename_img = {
@@ -51,27 +56,55 @@ def test_it_should_reject_bad_ids(app):
     with app.app_context() and pytest.raises(Exception):
         save_image(test_impossible_id, test_valid_img)
 
-def test_it_should_reject_bad_images(client):
-    assert False
+def test_it_should_reject_missing_images(app):
+    test_id = 1
+    with app.app_context and pytest.raises(Exception):
+        save_image(test_id, None)
     
 def test_it_should_save_jpeg(app):
     test_id = 1
-    test_img = FileStorage(stream = io.BytesIO(b"bytes"), filename = 'valid.png')
+    test_jpeg = FileStorage(stream = io.BytesIO(b"bytes"), filename = 'valid.jpeg')
     with app.app_context():
-        save_image(test_id, test_img)
+        save_image(test_id, test_jpeg)
         #cleanup
-        os.remove(f"{app.config['DIR']['images']}{test_id}_{test_img.filename}")
+        os.remove(f"{app.config['DIR']['images']}{test_id}_{test_jpeg.filename}")
     
-def test_it_should_save_jpg(client):
-    assert False
-def test_it_should_save_png(client):
-    assert False
-def test_it_should_save_gif(client):
-    assert False
+def test_it_should_save_jpg(app):
+    test_id = 1
+    test_jpg = FileStorage(stream = io.BytesIO(b"bytes"), filename = 'valid.jpg')
+    with app.app_context():
+        save_image(test_id, test_jpg)
+        #cleanup
+        os.remove(f"{app.config['DIR']['images']}{test_id}_{test_jpg.filename}")
+
+def test_it_should_save_png(app):
+    test_id = 1
+    test_png = FileStorage(stream = io.BytesIO(b"bytes"), filename = 'valid.png')
+    with app.app_context():
+        save_image(test_id, test_png)
+        #cleanup
+        os.remove(f"{app.config['DIR']['images']}{test_id}_{test_png.filename}")
+
+def test_it_should_save_gif(app):
+    test_id = 1
+    test_gif = FileStorage(stream = io.BytesIO(b"bytes"), filename = 'valid.gif')
+    with app.app_context():
+        save_image(test_id, test_gif)
+        #cleanup
+        os.remove(f"{app.config['DIR']['images']}{test_id}_{test_gif.filename}")
 
 #is_authorized test suite
+#ok it seems like i need login to be proved to have an active session to test?
 def test_it_should_verify_authorized_users(client):
-    assert False
+    with client and client.session_transaction() as session:
+        client.post('/api/user/login', data={'username': 'flask'})
+        session_test = session
+        print('foo')
+    # with client.session_transaction() as session:
+    #     session['cw-session'] = 1
+
+    # assert is_authorized()
+
 
 def test_it_should_reject_unauthorized_users(client):
     assert False
@@ -80,21 +113,21 @@ def test_it_should_reject_expired_users(client):
     assert False
 
 #session_is_active tests
-def it_should_identify_new_login_times():
-    assert False
+def test_it_should_identify_valid_login_times(app):
+    with app.app_context():
+        assert session_is_active(datetime.now())
 
-def it_should_identify_expired_login_times():
-    assert False
-
-def it_should_reject_invalid_login_times():
-    assert False
+def test_it_should_identify_expired_login_times(app):
+    expired_time = datetime.strptime("01/01/00 00:00", "%d/%m/%y %H:%M")
+    with app.app_context():
+        assert session_is_active(expired_time) is False
 
 #delete_session tests
-def it_should_delete_one_active_session():
+def test_it_should_delete_one_active_session():
     assert False
 
-def it_should_do_nothing_for_inactive_sessions():
+def test_it_should_do_nothing_for_inactive_sessions():
     assert False
 
-def it_should_delete_all_active_sessions():
+def test_it_should_delete_all_active_sessions():
     assert False

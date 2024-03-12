@@ -36,32 +36,25 @@ def allowed_extensions(filename, extensions):
     
     return extension_split[AFTER_EXTENSION].lower() in extensions
 
-#checks if the current session is authorized. deletes if the session is expired.
-def is_authorized():
+def is_authorized(cursor):
+    print('test')
+    print(session)
     if 'cw-session' in session:
         session_name = session['cw-session']
-        c = get_db()
-        cursor = c.cursor()
+        
         query = User.fetch_session(session_name)
         cursor.execute(query)
         result = cursor.fetchone()
 
-        if result is None:
-            close_db(c)
-            return False
-        else:
-            if session_is_active(result['c_login_time']):
-                close_db(c)
-                return True
-            else:
-                delete_session(session_name, c)
-                return False
+        return result and session_is_active(result['c_login_time'])
 
 def session_is_active(login_time):
+    current_time = datetime.now()
+
     login_duration_env = current_app.config['DB']['session_timeout']
     login_duration = datetime.strptime(login_duration_env, '%H:%M:%S')
     logout_time = login_time + timedelta(hours = login_duration.hour)
-    current_time = datetime.now()
+    
     return logout_time > current_time
 
 #deletes an active session. assumed to be last operation, closes connection

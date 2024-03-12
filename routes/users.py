@@ -95,8 +95,11 @@ def verify_session():
         return build_cors_preflight_response(request.origin)
     
     res = make_cors_response(request.origin)
+    c = get_db()
+    cursor = c.cursor()
 
-    if is_authorized():
-        return res
-    else:
-        return unauthorized_response(res)
+    if is_authorized(cursor) is False:
+        res = unauthorized_response(res)
+        
+    close_db(c)
+    return res

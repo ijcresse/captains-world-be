@@ -53,8 +53,11 @@ def post_tags_for_review(review_id):
         return build_cors_preflight_response(request.origin)
     
     res = make_cors_response(request.origin)
+    
+    c = get_db()
+    cursor = c.cursor()
 
-    if not is_authorized():
+    if not is_authorized(cursor):
         return unauthorized_response(res)
     
     if request.is_json is False:
@@ -68,16 +71,13 @@ def post_tags_for_review(review_id):
         res.set_data("No tags to process")
         return res
     
-    connection = get_db()
-    cursor = connection.cursor()
-
     (add_tags, delete_tags) = find_delta(review_id, tags, cursor)
     if len(add_tags) > 0:
-        commit_tags_to_db(add_tags, review_id, connection)
+        commit_tags_to_db(add_tags, review_id, c)
     if len(delete_tags) > 0:
-        remove_tags_from_db(delete_tags, review_id, connection)
+        remove_tags_from_db(delete_tags, review_id, c)
 
-    close_db()
+    close_db(c)
     
     res.status = 200
     return res
