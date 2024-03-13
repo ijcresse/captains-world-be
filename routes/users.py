@@ -1,4 +1,5 @@
 import secrets
+import logging
 
 from flask import Blueprint, request, session, current_app
 from .route_util import is_authorized, unauthorized_response, delete_session, build_cors_preflight_response, make_cors_response
@@ -44,8 +45,8 @@ def login():
             cursor.execute(query)
             c.commit()
         except Exception as e:
-            print(f'failed to create session for session {session_name}')
-            print(e)
+            logging.warn(f'failed to create session for session {session_name}')
+            logging.warn(e)
             res.status = 500
             res.set_data('Failed to create a valid session')
             return res

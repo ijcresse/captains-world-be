@@ -1,4 +1,5 @@
 import os
+import logging
 
 from datetime import datetime, timedelta
 from flask import current_app, jsonify, session, make_response
@@ -22,8 +23,8 @@ def save_image(id, img):
         img.save(os.path.join(image_dir, filename))
         return filename
     except Exception as error:
-        print(f"WARN: unable to successfully save {filename} to disk.")
-        print(jsonify(error))
+        logging.warn(f"Unable to successfully save {filename} to disk.")
+        logging.warn(jsonify(error))
 
 def allowed_extensions(filename, extensions):
     allowed = '.' in filename

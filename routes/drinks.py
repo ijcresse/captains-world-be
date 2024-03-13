@@ -89,7 +89,6 @@ def drink_list():
     cursor = connection.cursor()
 
     query = Drink.get_drinks_query(limit, offset)
-    print(query)
     
     cursor.execute(query)
     result = cursor.fetchall()
@@ -200,7 +199,6 @@ def post_drink_image(id):
         return res
     else:
         query = Drink.post_drink_image_query(filename, id)
-        print(query)
         cursor.execute(query)
         c.commit()
         close_db()

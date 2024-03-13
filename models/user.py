@@ -1,4 +1,5 @@
 import bcrypt
+import logging
 
 class User:
     def __init__(self, data):
@@ -14,8 +15,8 @@ class User:
             hashed_pw = hashed_pw.encode('utf-8')
             return bcrypt.checkpw(self.password, hashed_pw)
         except ValueError as ve:
-            print("Failure to check password via bcrypt")
-            print(ve)
+            logging.warn("Failure to check password via bcrypt")
+            logging.warn(ve)
             return False
         #return self.username == username and bcrypt.checkpw(self.hashed_pw, hashed_pw)
     
