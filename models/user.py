@@ -1,4 +1,5 @@
 import bcrypt
+import logging
 
 class User:
     def __init__(self, data):
@@ -14,8 +15,8 @@ class User:
             hashed_pw = hashed_pw.encode('utf-8')
             return bcrypt.checkpw(self.password, hashed_pw)
         except ValueError as ve:
-            print("Failure to check password via bcrypt")
-            print(ve)
+            logging.warn("Failure to check password via bcrypt")
+            logging.warn(ve)
             return False
         #return self.username == username and bcrypt.checkpw(self.hashed_pw, hashed_pw)
     
@@ -26,14 +27,14 @@ class User:
         return f"UPDATE t_users SET c_last_login=NOW() where c_username='{self.username}'"
     
     @staticmethod
-    def create_session(session):
+    def create_session_query(session):
         return f"INSERT INTO t_sessions (c_session_name) VALUES ('{session}')"
     
     @staticmethod
-    def fetch_session(session):
+    def fetch_session_query(session):
         return f'SELECT c_id, c_login_time FROM t_sessions WHERE c_session_name="{session}"'
     
     @staticmethod
     #forces going thru fetch_session for c_id first
-    def delete_session(session_id):
+    def delete_session_query(session_id):
         return f'DELETE FROM t_sessions WHERE c_id={session_id}'

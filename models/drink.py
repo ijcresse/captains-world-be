@@ -1,4 +1,5 @@
 import dateutil.parser
+import logging
 
 from enum import Enum
 
@@ -38,7 +39,7 @@ class Drink:
         if 'c_description' not in data or type(data['c_description']) != str:
             errors.append("Description missing or malformed")
         if len(errors) > 0:
-            print(errors) #TODO log this properly
+            logging.warn(errors) #TODO log this properly
             return False
         return True
 
@@ -46,7 +47,7 @@ class Drink:
         try:
             dateutil.parser.isoparse(data)
         except ValueError:
-            print('LOG THIS: DateEnjoyed string is malformed')
+            logging.warn('DateEnjoyed string is malformed')
             return False
         return True
 

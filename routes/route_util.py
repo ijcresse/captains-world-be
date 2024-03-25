@@ -1,4 +1,5 @@
 import os
+import logging
 
 from datetime import datetime, timedelta
 from flask import current_app, jsonify, session, make_response
@@ -7,49 +8,65 @@ from werkzeug.utils import secure_filename
 from models.user import User
 from services.db import get_db, close_db
 
-def create_response(status, desc = "", data = []):
-    return jsonify({ 'desc' : desc, 'data': data }), status
+BEFORE_EXTENSION = 0
+AFTER_EXTENSION = 1
 
-def allowed_extensions(filename, extensions):
-    return '.' in filename and filename.rsplit('.', 1)[1].lower() in extensions
-
+#saves an image to disk
 def save_image(id, img):
     image_dir = current_app.config['DIR']['images']
     extensions = current_app.config['DIR']['extensions']
 
-    if img and allowed_extensions(img.filename, extensions):
+    try:
+        if allowed_extensions(img.filename, extensions) is False:
+            raise Exception("Invalid filename or filetype.")
         filename = secure_filename(f"{id}_{img.filename}")
-        
-        try:
-            img.save(os.path.join(image_dir, filename))
-        except Exception as error:
-            filename = ''
-            print(f"WARN: unable to successfully save {filename} to disk.")
-            print(jsonify(error))
+        img.save(os.path.join(image_dir, filename))
         return filename
-    else:
-        return ''
+    except Exception as error:
+        logging.warn(f"Unable to successfully save {filename} to disk.")
+        logging.warn(jsonify(error))
 
-#checks if the current session is authorized. deletes if the session is expired.
-def is_authorized():
+def allowed_extensions(filename, extensions):
+    allowed = '.' in filename
+    if allowed is False:
+        return False
+    
+    extension_split = filename.rsplit('.', 1)
+    if len(extension_split[BEFORE_EXTENSION]) == 0:
+        return False
+    
+    return extension_split[AFTER_EXTENSION].lower() in extensions
+
+def is_authorized(cursor):
     if 'cw-session' in session:
         session_name = session['cw-session']
-        c = get_db()
-        cursor = c.cursor()
-        query = User.fetch_session(session_name)
+        
+        query = User.fetch_session_query(session_name)
         cursor.execute(query)
         result = cursor.fetchone()
 
-        if result is None:
-            close_db(c)
-            return False
-        else:
-            if session_is_active(result['c_login_time']):
-                close_db(c)
-                return True
-            else:
-                delete_session(session_name, c)
-                return False
+        return result and session_is_active(result['c_login_time'])
+
+def session_is_active(login_time):
+    current_time = datetime.now()
+
+    login_duration_env = current_app.config['DB']['session_timeout']
+    login_duration = datetime.strptime(login_duration_env, '%H:%M:%S')
+    logout_time = login_time + timedelta(hours = login_duration.hour)
+    
+    return logout_time > current_time
+
+#deletes an active session if exists.
+def delete_session(session_name, c):
+    cursor = c.cursor()
+    query = User.fetch_session_query(session_name)
+    cursor.execute(query)
+    result = cursor.fetchone()
+
+    if result:
+        query = User.delete_session_query(result['c_id'])
+        cursor.execute(query)
+        c.commit()
 
 #returns 401 for unauthorized users hitting an auth endpoint
 def unauthorized_response(res):
@@ -57,35 +74,7 @@ def unauthorized_response(res):
     res.set_data("Secured endpoint")
     return res
 
-def session_is_active(login_time):
-    login_duration_env = current_app.config['DB']['session_timeout']
-    login_duration = datetime.strptime(login_duration_env, '%H:%M:%S')
-    logout_time = login_time + timedelta(hours = login_duration.hour)
-    current_time = datetime.now()
-    return logout_time > current_time
-
-#deletes an active session. assumed to be last operation, closes connection
-def delete_session(session_name, c):
-    cursor = c.cursor()
-    query = User.fetch_session(session_name)
-    cursor.execute(query)
-    result = cursor.fetchone()
-
-    #no session found, no operation
-    if result is None:
-        close_db(c)
-        return False
-    else:
-        query = User.delete_session(result['c_id'])
-        cursor.execute(query)
-        c.commit()
-        close_db(c)
-
-        session.pop('cw-session', None)
-
-        return True
-
-def _build_cors_preflight_response(origin):
+def build_cors_preflight_response(origin):
     res = make_response()
     res.headers.add('Access-Control-Allow-Origin', origin)
     res.headers.add('Access-Control-Allow-Credentials', 'true')
@@ -94,13 +83,13 @@ def _build_cors_preflight_response(origin):
     res.headers.add('Access-Control-Expose-Headers', 'Access-Control-Allow-Origin, Access-Control-Allow-Credentials, content-type, content-length')
     return res
 
-def _make_cors_response(origin):
+def make_cors_response(origin):
     res = make_response()
     res.headers.add('Access-Control-Allow-Origin', origin)
     res.headers.add('Access-Control-Allow-Credentials', 'true')
     return res
 
-def _make_json_response(json, res):
+def make_json_response(json, res):
     json.headers = res.headers
     json.headers.set('Content-Type', 'application/json')
     return json

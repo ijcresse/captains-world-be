@@ -1,6 +1,8 @@
 import os
 import sys
 
+import logging
+
 def get_db_config():
     db_config = {
         'host' : os.getenv("CW_DB_HOST"),
@@ -12,7 +14,7 @@ def get_db_config():
     
     for value in db_config:
         if db_config[value] is None:
-            print("ERROR: missing database environment variable(s)!")
+            logging.error("Missing database environment variable(s)!")
             sys.exit()
 
     return db_config
@@ -24,7 +26,7 @@ def get_dir_config():
     }
 
     if dir_config['images'] is None:
-        print("ERROR: missing directory environment variable(s)!")
+        logging.error("Missing directory environment variable(s)!")
         sys.exit()
 
     return dir_config
@@ -35,7 +37,7 @@ def get_secret_config():
     }
     for value in secret_config:
         if secret_config[value] is None:
-            print("ERROR: missing secret environment variable(s)!")
+            logging.error("Missing secret environment variable(s)!")
             sys.exit()
 
     return secret_config
@@ -49,9 +51,10 @@ def get_flask_config():
 
     for value in flask_config:
         if flask_config[value] is None:
-            print("ERROR: missing flask configuration env vars!")
+            logging.error("Missing flask configuration env vars!")
             sys.exit()
     return flask_config
 
 def get_env_vars():
     return (get_dir_config(), get_db_config(), get_secret_config(), get_flask_config())
+

@@ -8,6 +8,8 @@ env.ini
 *.ini
 *.sock
 
+*.log
+
 instance/
 
 .pytest_cache/
