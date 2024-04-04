@@ -95,7 +95,7 @@ def verify_session():
     c = get_db()
     cursor = c.cursor()
 
-    if is_authorized(cursor) is False:
+    if is_authorized(cursor) is None:
         res = unauthorized_response(res)
         
     close_db()
