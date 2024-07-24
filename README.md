@@ -48,15 +48,10 @@ uwsgi --socket 127.0.0.1:5000 --wsgi-file wsgi.py --ini captains-world-be.ini
 ```
 
 ## Structure
+```
 react FE -> flask BE -> sql DB
 captains_world/
     /views #containing static site content
     /images #containing image urls for uploaded content. db will host these image names.
     /server #containing production code for this project
-
-### cors and cookie note
-this is mostly a note for myself so i don't have to dig around.
-in order to send cookies across https from webapp origin to server origin:
-httponly: false
-secure: true
-samesite: none
+```
